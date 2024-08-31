@@ -13,7 +13,8 @@ router.post(
 
 router.post(
   '/requests/accept',
-  (validateAuth(USER_ROLE.user), FriendControllers.acceptFriendRequest),
+  validateAuth(USER_ROLE.user),
+  FriendControllers.acceptFriendRequest,
 );
 
 export const FriendRoutes = router;

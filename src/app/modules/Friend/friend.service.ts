@@ -6,6 +6,14 @@ import { Friend } from './friend.model';
 import { User } from '../User/user.model';
 
 const sendFriendRequestToDB = async (user: JwtPayload, payload: IFriend) => {
+  // Check if the user is trying to send a friend request to themselves
+  if (user?.userId === payload?.friendId) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'You cannot send a friend request to yourself!',
+    );
+  }
+
   const targetUser = await User.findById(payload?.friendId);
 
   // Check if the user or targer exists
@@ -55,8 +63,8 @@ const acceptFriendRequestToDB = async (user: JwtPayload, payload: IFriend) => {
 
   // Find the friend request by ID and ensure it is pending
   const friendRequest = await Friend.findOne({
-    _id: user?.userId,
-    friendId: payload?.friendId,
+    userId: payload?.friendId, // Sent request
+    friendId: user?.userId, // Received request
     status: 'pending',
   });
 
