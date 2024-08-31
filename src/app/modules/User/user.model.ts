@@ -19,16 +19,61 @@ const userSchema = new Schema<IUser, UserModel>(
       lowercase: true,
       trim: true,
     },
+    phoneNumber: {
+      type: String,
+    },
     avatar: {
       type: String,
       default: 'https://i.ibb.co/z5YHLV9/profile.png',
     },
-    phoneNumber: {
+    bio: {
       type: String,
+      maxlength: 300,
+      trim: true,
     },
     gender: {
       type: String,
       enum: Object.values(GENDER),
+    },
+    address: {
+      type: String,
+    },
+    occupations: {
+      type: String,
+    },
+    worksAt: {
+      type: String,
+    },
+    studiedAt: {
+      type: String,
+    },
+    relationshipStatus: {
+      type: String,
+    },
+    friends: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    friendRequests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    instagramUrl: {
+      type: String,
+      trim: true,
+    },
+    interests: [
+      {
+        type: String,
+      },
+    ],
+    isPrivateProfile: {
+      type: Boolean,
+      default: false, // Default value for new users
     },
     password: {
       type: String,
@@ -37,12 +82,6 @@ const userSchema = new Schema<IUser, UserModel>(
     },
     passwordChangedAt: {
       type: Date,
-    },
-    permanentAddress: {
-      type: String,
-    },
-    presentAddress: {
-      type: String,
     },
     role: {
       type: String,
