@@ -23,4 +23,16 @@ router.post(
   FriendControllers.acceptFriendRequest,
 );
 
+router.get(
+  '/requests/received',
+  validateAuth(USER_ROLE.user),
+  FriendControllers.getAllReceivedFriendRequests,
+);
+
+router.get(
+  '/requests/sent',
+  validateAuth(USER_ROLE.user),
+  FriendControllers.getAllSentFriendRequests,
+);
+
 export const FriendRoutes = router;

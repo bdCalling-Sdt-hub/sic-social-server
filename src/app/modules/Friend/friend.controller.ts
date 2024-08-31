@@ -45,8 +45,34 @@ const acceptFriendRequest = catchAsync(async (req, res) => {
   });
 });
 
+const getAllReceivedFriendRequests = catchAsync(async (req, res) => {
+  const result = await FriendServices.getAllReceivedFriendRequestsFromDB(
+    req?.user,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Received friend requests retrieved successfully!',
+    data: result,
+  });
+});
+
+const getAllSentFriendRequests = catchAsync(async (req, res) => {
+  const result = await FriendServices.getAllSentFriendRequestsFromDB(req?.user);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Sent friend requests retrieved successfully!',
+    data: result,
+  });
+});
+
 export const FriendControllers = {
   sendFriendRequest,
   cancelFriendRequest,
   acceptFriendRequest,
+  getAllReceivedFriendRequests,
+  getAllSentFriendRequests,
 };

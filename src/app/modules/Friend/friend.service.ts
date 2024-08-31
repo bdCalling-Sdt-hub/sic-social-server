@@ -102,8 +102,31 @@ const acceptFriendRequestToDB = async (
   await friendRequest.save();
 };
 
+const getAllSentFriendRequestsFromDB = async (user: JwtPayload) => {
+  const friendRequests = await Friend.find({
+    senderId: user?.userId,
+    status: 'pending',
+  });
+
+  const userIds = friendRequests?.map((request) => request?.recipientId);
+
+  return User.find({ _id: { $in: userIds } });
+};
+
+const getAllReceivedFriendRequestsFromDB = async (user: JwtPayload) => {
+  const friendRequests = await Friend.find({
+    recipientId: user?.userId,
+    status: 'pending',
+  });
+  const userIds = friendRequests.map((request) => request.senderId);
+
+  return User.find({ _id: { $in: userIds } });
+};
+
 export const FriendServices = {
   sendFriendRequestToDB,
   cancelFriendRequestToDB,
   acceptFriendRequestToDB,
+  getAllSentFriendRequestsFromDB,
+  getAllReceivedFriendRequestsFromDB,
 };
