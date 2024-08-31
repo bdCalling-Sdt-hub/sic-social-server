@@ -8,7 +8,7 @@ const createAboutSicToDB = async (user: JwtPayload, payload: IAboutSic) => {
   // Check the total number of about sic in the database
   const aboutSicCount = await AboutSic.countDocuments();
 
-  // If the total number of sliders has reached the limit (5), throw an error
+  // If the total number of about sic has reached the limit 1, throw an error
   if (aboutSicCount >= 1) {
     throw new ApiError(
       httpStatus.CONFLICT,

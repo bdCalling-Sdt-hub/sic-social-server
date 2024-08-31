@@ -19,7 +19,7 @@ const privacyPolicySchema = new Schema<IPrivacyPolicy>(
   { timestamps: true }, // Automatically adds createdAt and updatedAt timestamps to the schema
 );
 
-// Create the 'Our Story' model using the schema
+// Create the Privacy policy model using the schema
 export const PrivacyPolicy = model<IPrivacyPolicy>(
   'PrivacyPolicy',
   privacyPolicySchema,

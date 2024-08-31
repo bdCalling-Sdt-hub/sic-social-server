@@ -11,7 +11,7 @@ const createPrivacyPolicyToDB = async (
   // Check the total number of privacy policy in the database
   const privacyPolicyCount = await PrivacyPolicy.countDocuments();
 
-  // If the total number of sliders has reached the limit (5), throw an error
+  // If the total number of privacy policy has reached the limit 1, throw an error
   if (privacyPolicyCount >= 1) {
     throw new ApiError(
       httpStatus.CONFLICT,

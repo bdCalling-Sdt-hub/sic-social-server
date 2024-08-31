@@ -5,12 +5,14 @@ import { FaqRoutes } from '../modules/FAQ/faq.route';
 import { PrivacyPolicyRoutes } from '../modules/Privacy Policy/privacyPolicy.route';
 import { AboutSicRoutes } from '../modules/About Sic/aboutSic.route';
 import { TermsAndConditionRoutes } from '../modules/TermsAndConditions/termsAndConditions.route';
+import { FriendRoutes } from '../modules/Friend/friend.route';
 
 const router = Router();
 
 const routes = [
   { path: '/users', route: UserRoutes },
   { path: '/auth', route: AuthRoutes },
+  { path: '/friends', route: FriendRoutes },
 
   // Settings
   { path: '/faqs', route: FaqRoutes },

@@ -21,9 +21,6 @@ export interface IUser {
   studiedAt?: string;
   relationshipStatus?: string;
   instagramUrl?: string;
-  friends: ObjectId[];
-  friendRequests: ObjectId[];
-  pendingRequests: ObjectId[];
   interests: string[];
   isPrivateProfile: boolean;
   password: string;
