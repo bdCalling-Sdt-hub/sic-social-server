@@ -19,7 +19,6 @@ import { errorLogger, logger } from '../../utils/winstonLogger';
 import colors from 'colors';
 import { sendEmail } from '../../helpers/emailService';
 import { startOfMonth, endOfMonth } from 'date-fns';
-import { Favourite } from '../Favourite/favourite.model';
 import { unlinkFile } from '../../helpers/fileHandler';
 
 const createUserToDB = async (payload: IUser) => {
@@ -263,23 +262,6 @@ const updateUserProfileToDB = async (
   return result;
 };
 
-const getUserFavouritesPropertyFromDB = async (user: JwtPayload) => {
-  // Find all favorites for the user
-  const favorites = await Favourite.find({ userId: user?.userId }).populate({
-    path: 'propertyId',
-    select: 'propertyImages price priceType title category address createdBy', // Include createdBy field
-    populate: {
-      path: 'createdBy',
-      select: 'avatar', // Select only the user image (avatar) field
-    },
-  });
-
-  // Extract the properties from the favorite records
-  const result = favorites.map((favorite) => favorite.propertyId);
-
-  return result;
-};
-
 // Schedule a cron job to delete expired, unverified users every 12 hours
 cron.schedule('0 */12 * * *', async () => {
   const now = new Date();
@@ -317,5 +299,4 @@ export const UserServices = {
   getAdminsFromDB,
   getUserProfileFromDB,
   updateUserProfileToDB,
-  getUserFavouritesPropertyFromDB,
 };

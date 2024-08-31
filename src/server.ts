@@ -21,7 +21,7 @@ async function main() {
       ),
     );
 
-    server = app.listen(Number(config.port), config.ipAddress as string, () => {
+    server = app.listen(Number(config.port), () => {
       logger.info(
         colors.bgYellow.bold(
           `🚀 Server running on: ${config.ipAddress}:${config.port}`,

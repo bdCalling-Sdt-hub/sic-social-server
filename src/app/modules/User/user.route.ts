@@ -26,12 +26,6 @@ router.get(
   UserControllers.getUserProfile,
 );
 
-router.get(
-  '/favourites',
-  validateAuth(USER_ROLE.user, USER_ROLE.admin, USER_ROLE.superAdmin),
-  UserControllers.getUserFavouritesProperty,
-);
-
 router.get('/user-count', UserControllers.getVerifiedUsersCount);
 router.get('/user-count/:year', UserControllers.getUserCountByYear);
 
