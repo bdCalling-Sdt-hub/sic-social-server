@@ -3,12 +3,12 @@ import { IFriend } from './friend.interface';
 
 const friendSchema = new Schema<IFriend>(
   {
-    userId: {
+    senderId: {
       type: Schema.Types.ObjectId, // MongoDB ObjectId type
       ref: 'User', // Reference to the 'User' model
       required: true,
     },
-    friendId: {
+    recipientId: {
       type: Schema.Types.ObjectId, // MongoDB ObjectId type
       ref: 'User', // Reference to the 'User' model
       required: true,

@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongoose';
 
 export interface IFriend {
-  userId: ObjectId; // Reference to the User
-  friendId: ObjectId;
+  senderId: ObjectId; // Reference to the User
+  recipientId: ObjectId;
   status: 'pending' | 'accepted';
 }
