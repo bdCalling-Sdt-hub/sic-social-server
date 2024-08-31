@@ -26,7 +26,7 @@ router.get(
   UserControllers.getUserProfile,
 );
 
-router.get('/user-count', UserControllers.getVerifiedUsersCount);
+router.get('/user-count', UserControllers.getUsersCount);
 router.get('/user-count/:year', UserControllers.getUserCountByYear);
 
 router.post(

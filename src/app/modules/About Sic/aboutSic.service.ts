@@ -47,7 +47,6 @@ const updateAboutSicByIdFromDB = async (
 
   // Prevent modification of the createdBy field to maintain integrity
   delete payload.createdBy;
-  payload.lastUpdated = new Date();
 
   // Update the About Sic entry in the database with the new data
   const result = await AboutSic.findByIdAndUpdate(aboutSicId, payload, {

@@ -131,7 +131,7 @@ const getAdminsFromDB = async (query: Record<string, unknown>) => {
   return { meta, result };
 };
 
-const getVerifiedUsersCountFromDB = async () => {
+const getUsersCountFromDB = async () => {
   const totalUser = await User.countDocuments({
     role: 'user',
     isVerified: true,
@@ -280,7 +280,7 @@ export const UserServices = {
   createUserToDB,
   createAdminToDB,
   getUsersFromDB,
-  getVerifiedUsersCountFromDB,
+  getUsersCountFromDB,
   getUserCountByYearFromDB,
   getAdminsFromDB,
   getUserProfileFromDB,

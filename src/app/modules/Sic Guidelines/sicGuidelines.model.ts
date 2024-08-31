@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
-import { IAboutSic } from './aboutSic.interface';
+import { ISicGuidelines } from './sicGuidelines.interface';
 
-const aboutSicSchema = new Schema<IAboutSic>(
+const sicGuidelinesSchema = new Schema<ISicGuidelines>(
   {
     createdBy: {
       type: Schema.Types.ObjectId, // MongoDB ObjectId type
@@ -17,4 +17,7 @@ const aboutSicSchema = new Schema<IAboutSic>(
 );
 
 // Create the About Sic model using the schema
-export const AboutSic = model<IAboutSic>('AboutSic', aboutSicSchema);
+export const SicGuidelines = model<ISicGuidelines>(
+  'SicGuidelines',
+  sicGuidelinesSchema,
+);

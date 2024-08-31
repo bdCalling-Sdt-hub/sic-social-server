@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongoose';
 
-export interface IAboutSic {
+export interface ISicGuidelines {
   createdBy: ObjectId; // Reference to the User
   content: string;
 }
