@@ -1,23 +1,23 @@
 import { Router } from 'express';
 import validateAuth from '../../middlewares/validateAuth';
 import { USER_ROLE } from '../User/user.constant';
-import { TermsControllers } from './terms.controller';
+import { TermsAndConditionControllers } from './termsAndConditions.controller';
 
 const router = Router();
 
 router
   .route('/')
 
-  .get(TermsControllers.getTerms)
+  .get(TermsAndConditionControllers.getTermsAndConditions)
   .post(
     validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
-    TermsControllers.createTerms,
+    TermsAndConditionControllers.createTermsAndConditions,
   );
 
 router.patch(
   '/:id',
   validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
-  TermsControllers.updateTermsById,
+  TermsAndConditionControllers.updateTermsAndConditionsById,
 );
 
-export const TermsRoutes = router;
+export const TermsAndConditionRoutes = router;

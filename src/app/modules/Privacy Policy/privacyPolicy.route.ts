@@ -24,4 +24,4 @@ router.patch(
   PrivacyPolicyControllers.updatePrivacyPolicyById,
 );
 
-export const StoryRoutes = router;
+export const PrivacyPolicyRoutes = router;

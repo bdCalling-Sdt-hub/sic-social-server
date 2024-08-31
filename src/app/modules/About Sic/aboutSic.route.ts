@@ -24,4 +24,4 @@ router.patch(
   AboutSicControllers.updateAboutSicById,
 );
 
-export const StoryRoutes = router;
+export const AboutSicRoutes = router;

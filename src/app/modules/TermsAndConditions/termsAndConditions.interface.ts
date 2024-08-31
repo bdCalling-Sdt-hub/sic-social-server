@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongoose';
 
-export interface ITerms {
+export interface ITermsAndConditions {
   createdBy: ObjectId; // Reference to the User
-  termsContent: string;
+  content: string;
 }
