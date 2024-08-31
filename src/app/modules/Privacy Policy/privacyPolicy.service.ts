@@ -8,7 +8,7 @@ const createPrivacyPolicyToDB = async (
   user: JwtPayload,
   payload: IPrivacyPolicy,
 ) => {
-  // Check the total number of our stories in the database
+  // Check the total number of privacy policy in the database
   const privacyPolicyCount = await PrivacyPolicy.countDocuments();
 
   // If the total number of sliders has reached the limit (5), throw an error
@@ -28,7 +28,7 @@ const createPrivacyPolicyToDB = async (
 };
 
 const getPrivacyPolicyFromDB = async () => {
-  // Fetch all our stories entries from the database
+  // Fetch all privacy policy entries from the database
   const result = await PrivacyPolicy.find();
   return result;
 };
@@ -37,7 +37,7 @@ const updatePrivacyPolicyByIdFromDB = async (
   privacyPolicyId: string,
   payload: Partial<IPrivacyPolicy>,
 ) => {
-  // Fetch the existing our stories entry from the database by its ID
+  // Fetch the existing privacy policy entry from the database by its ID
   const existingPrivacyPolicy = await PrivacyPolicy.findById(privacyPolicyId);
 
   // If the Privacy Policy entry does not exist, throw an error
