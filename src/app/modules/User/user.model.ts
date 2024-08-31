@@ -62,6 +62,12 @@ const userSchema = new Schema<IUser, UserModel>(
         ref: 'User',
       },
     ],
+    pendingRequests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
     instagramUrl: {
       type: String,
       trim: true,
@@ -172,19 +178,19 @@ userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
 userSchema.statics.verifyOtp = async function (email: string, otp: number) {
   const existingUser = await User.isUserExistsByEmail(email);
 
-  // Validate OTP input
-  if (!otp) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      'OTP is required. Please check your email for the code!',
-    );
-  }
-
   // Check if user exists
   if (!existingUser) {
     throw new ApiError(
       httpStatus.NOT_FOUND,
       'User with this email does not exist!',
+    );
+  }
+
+  // Validate OTP input
+  if (!otp) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'OTP is required. Please check your email for the code!',
     );
   }
 
@@ -217,6 +223,158 @@ userSchema.statics.verifyOtp = async function (email: string, otp: number) {
   });
 
   return null;
+};
+
+// Function to suggest friends based on common interests
+userSchema.statics.suggestFriendsBasedOnInterests = async function (
+  email: string,
+) {
+  const existingUser = await User.findOne({ email });
+
+  // Check if user exists
+  if (!existingUser) {
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      'User with this email does not exist!',
+    );
+  }
+
+  // Find users with similar interests, excluding the user themselves
+  const suggestedFriends = await this.find({
+    _id: { $ne: existingUser?._id },
+    interests: { $in: existingUser?.interests },
+  });
+
+  return suggestedFriends;
+};
+
+userSchema.statics.sendFriendRequest = async function (
+  userEmail,
+  targetUserId,
+) {
+  const existingUser = await User.findOne({ email: userEmail });
+  const targetUser = await this.findById(targetUserId);
+
+  // Check if user exists
+  if (!existingUser || !targetUser) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist!');
+  }
+
+  // Check if they are already friends
+  if (existingUser?.friends?.includes(targetUserId)) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'You are already friends with this user.',
+    );
+  }
+
+  // Add friend request
+  targetUser?.friendRequests?.push(existingUser?._id);
+  await targetUser.save();
+
+  // Add target user to sender's pending requests list
+  existingUser?.pendingRequests?.push(targetUserId);
+  await existingUser.save();
+
+  return targetUser;
+};
+
+userSchema.statics.cancelFriendRequest = async function (
+  userEmail,
+  targetUserId,
+) {
+  const existingUser = await User.findOne({ email: userEmail });
+  const targetUser = await this.findById(targetUserId);
+
+  // Check if both users exist
+  if (!existingUser || !targetUser) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist!');
+  }
+
+  // Check if the friend request exists in the target user's list
+  if (!targetUser?.friendRequests?.includes(existingUser?._id)) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'No pending friend request from this user!',
+    );
+  }
+
+  // Remove the friend request from the target user's list
+  targetUser.friendRequests = targetUser?.friendRequests?.filter(
+    (requesterId) => requesterId !== existingUser?._id,
+  );
+
+  // Optionally, remove the target user from the sender's pending requests list if you maintain such a list
+  existingUser.pendingRequests = existingUser?.pendingRequests?.filter(
+    (pendingRequest) => pendingRequest !== targetUserId,
+  );
+
+  // Save the changes to both users
+  await targetUser.save();
+  await existingUser.save();
+
+  return existingUser;
+};
+
+userSchema.statics.acceptFriendRequest = async function (
+  userEmail,
+  requesterId,
+) {
+  const existingUser = await User.findOne({ email: userEmail });
+  const requester = await this.findById(requesterId);
+
+  // Check if user exists
+  if (!existingUser || !requester) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist!');
+  }
+
+  // Check if friend request exists
+  if (!existingUser?.friendRequests?.includes(requesterId)) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'No friend request from this user',
+    );
+  }
+
+  // Add each other as friends
+  existingUser?.friends?.push(requesterId);
+  requester?.friends?.push(existingUser?._id);
+
+  // Remove the friend request
+  existingUser.friendRequests = existingUser?.friendRequests?.filter(
+    (_id) => _id.toString() !== requesterId?.toString(),
+  );
+
+  existingUser.pendingRequests = existingUser.pendingRequests.filter(
+    (_id) => _id.toString() !== requesterId?.toString(),
+  );
+
+  await existingUser.save();
+  await requester.save();
+  return existingUser;
+};
+
+userSchema.statics.removeFriend = async function (userEmail, friendId) {
+  const existingUser = await User.findOne({ email: userEmail });
+  const friend = await this.findById(friendId);
+
+  // Check if user exists
+  if (!existingUser || !friend) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist!');
+  }
+
+  // Remove each other as friends
+  existingUser.friends = existingUser?.friends?.filter(
+    (_id) => _id?.toString() !== friendId?.toString(),
+  );
+
+  friend.friends = friend?.friends?.filter(
+    (_id) => _id.toString() !== existingUser?._id?.toString(),
+  );
+
+  await existingUser.save();
+  await friend.save();
+  return existingUser;
 };
 
 // Create the User model using the schema

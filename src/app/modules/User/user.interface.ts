@@ -23,6 +23,7 @@ export interface IUser {
   instagramUrl?: string;
   friends: ObjectId[];
   friendRequests: ObjectId[];
+  pendingRequests: ObjectId[];
   interests: string[];
   isPrivateProfile: boolean;
   password: string;
