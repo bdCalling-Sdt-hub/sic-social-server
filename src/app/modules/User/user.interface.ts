@@ -12,7 +12,6 @@ export interface IUser {
   fullName: string;
   email: string;
   avatar: string;
-  coverImage: string;
   phoneNumber: string;
   nidNumber: number;
   ineNumber: number;

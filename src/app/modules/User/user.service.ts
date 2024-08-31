@@ -210,7 +210,7 @@ const getUserProfileFromDB = async (user: JwtPayload) => {
 const updateUserProfileToDB = async (
   user: JwtPayload,
   payload: Partial<IUser>,
-  files: any,
+  file: any,
 ) => {
   // Find the existing user to get the current avatar path
   const existingUser = await User.findById(user?.userId);
@@ -224,8 +224,8 @@ const updateUserProfileToDB = async (
   }
 
   // Handle avatar update if a new avatar is uploaded
-  if (files?.avatar && files?.avatar?.length > 0) {
-    const newAvatarPath = files?.avatar[0]?.path.replace(/\\/g, '/'); // Replace backslashes with forward slashes
+  if (file?.avatar && file?.avatar) {
+    const newAvatarPath = file?.avatar?.path.replace(/\\/g, '/'); // Replace backslashes with forward slashes
     payload.avatar = newAvatarPath;
 
     // Delete the old avatar file if it exists and is not the default
@@ -234,20 +234,6 @@ const updateUserProfileToDB = async (
       existingUser?.avatar !== 'https://i.ibb.co/z5YHLV9/profile.png'
     ) {
       unlinkFile(existingUser?.avatar);
-    }
-  }
-
-  // Handle cover image update if a new cover image is uploaded
-  if (files?.coverImage && files?.coverImage?.length > 0) {
-    const newCoverImagePath = files?.coverImage[0]?.path.replace(/\\/g, '/'); // Replace backslashes with forward slashes
-    payload.coverImage = newCoverImagePath;
-
-    // Delete the old cover image file if it exists and is not the default
-    if (
-      existingUser?.coverImage &&
-      existingUser?.coverImage !== 'https://i.ibb.co/z5YHLV9/profile.png'
-    ) {
-      unlinkFile(existingUser?.coverImage);
     }
   }
 
@@ -277,7 +263,7 @@ cron.schedule('0 */12 * * *', async () => {
     if (result?.deletedCount > 0) {
       logger.info(
         colors.bgGreen(
-          `${result?.deletedCount} expired unverified users were deleted.`,
+          `${result?.deletedCount} expired unverified users were deleted!`,
         ),
       );
     } else {

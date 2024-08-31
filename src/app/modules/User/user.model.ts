@@ -23,17 +23,8 @@ const userSchema = new Schema<IUser, UserModel>(
       type: String,
       default: 'https://i.ibb.co/z5YHLV9/profile.png',
     },
-    coverImage: {
-      type: String,
-    },
     phoneNumber: {
       type: String,
-    },
-    nidNumber: {
-      type: Number,
-    },
-    ineNumber: {
-      type: Number,
     },
     gender: {
       type: String,

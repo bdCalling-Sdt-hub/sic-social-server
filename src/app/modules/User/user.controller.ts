@@ -86,7 +86,7 @@ const updateUserProfile = catchAsync(async (req, res) => {
   const result = await UserServices?.updateUserProfileToDB(
     req?.user,
     req?.body,
-    req?.files,
+    req?.file,
   );
 
   sendResponse(res, {
