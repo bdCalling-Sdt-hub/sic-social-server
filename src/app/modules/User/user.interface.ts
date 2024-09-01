@@ -29,9 +29,8 @@ export interface IUser {
   status: TUserStatus;
   otp?: number;
   otpExpiresAt?: Date;
-  isDeleted: boolean;
-  isBlocked: boolean;
   isVerified: boolean;
+  isBlocked: boolean;
   toJSON(options?: { includeRole?: boolean }): IUser;
 }
 
