@@ -42,7 +42,7 @@ const verifyOtpToDB = async (payload: {
     const accessToken = createJwtToken(
       jwtPayload,
       config.jwtAccessSecret as string,
-      '10m',
+      '5m',
     );
 
     return {
@@ -86,7 +86,7 @@ const resendVerificationEmailToDB = async (payload: { email: string }) => {
 
   const emailOptions = {
     to: existingUser?.email, // Receiver's email address
-    subject: 'Verify Your Email Address - Romzz',
+    subject: 'Verify Your Email Address - Sic Social',
     html: verifyEmailTemplate, // HTML content of the email
   };
 
@@ -121,10 +121,6 @@ const loginUserToDB = async (payload: {
 
   if (existingUser?.isBlocked) {
     throw new ApiError(httpStatus.FORBIDDEN, 'User account is blocked!');
-  }
-
-  if (existingUser?.isDeleted) {
-    throw new ApiError(httpStatus.FORBIDDEN, 'User account is deleted.');
   }
 
   // Verify the provided password
@@ -221,10 +217,6 @@ const requestPasswordResetToDB = async (payload: { email: string }) => {
     throw new ApiError(httpStatus.FORBIDDEN, 'User account is blocked!');
   }
 
-  if (existingUser?.isDeleted) {
-    throw new ApiError(httpStatus.FORBIDDEN, 'User account is deleted.');
-  }
-
   // Generate OTP for password reset and set its expiration
   const otp = generateOtp();
   const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // OTP expires in 5 minutes
@@ -248,7 +240,7 @@ const requestPasswordResetToDB = async (payload: { email: string }) => {
 
   const emailOptions = {
     to: payload?.email,
-    subject: 'Reset Your Password - Romzz',
+    subject: 'Reset Your Password - Sic Social',
     html: forgetPasswordTemplate, // HTML content of the email
   };
 
@@ -287,10 +279,6 @@ const resetPasswordToDB = async (
 
   if (existingUser?.isBlocked) {
     throw new ApiError(httpStatus.FORBIDDEN, 'User account is blocked!');
-  }
-
-  if (existingUser?.isDeleted) {
-    throw new ApiError(httpStatus.FORBIDDEN, 'User account is deleted.');
   }
 
   // Ensure the new password is different from the current password
@@ -341,11 +329,6 @@ const issueNewAccessToken = async (token: string) => {
   // If the user is blocked, throw a FORBIDDEN error.
   if (existingUser?.isBlocked) {
     throw new ApiError(httpStatus.FORBIDDEN, 'User account is blocked!');
-  }
-
-  // If the user is deleted, throw a FORBIDDEN error.
-  if (existingUser?.isDeleted) {
-    throw new ApiError(httpStatus.FORBIDDEN, 'User account is deleted!');
   }
 
   if (
