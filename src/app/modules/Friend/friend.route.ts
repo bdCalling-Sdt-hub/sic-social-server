@@ -5,6 +5,14 @@ import { FriendControllers } from './friend.controller';
 
 const router = Router();
 
+router.get('/', validateAuth(USER_ROLE.user), FriendControllers.getFriendsList);
+
+router.post(
+  '/suggestions',
+  validateAuth(USER_ROLE.user),
+  FriendControllers.getFriendSuggestions,
+);
+
 router.post(
   '/requests',
   validateAuth(USER_ROLE.user),

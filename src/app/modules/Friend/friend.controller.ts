@@ -3,6 +3,17 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { FriendServices } from './friend.service';
 
+const getFriendSuggestions = catchAsync(async (req, res) => {
+  const result = await FriendServices.getFriendSuggestionsFromDB(req?.user);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Friend suggestions retrieved successfully!',
+    data: result,
+  });
+});
+
 const sendFriendRequest = catchAsync(async (req, res) => {
   const result = await FriendServices.sendFriendRequestToDB(
     req?.user,
@@ -69,10 +80,23 @@ const getAllSentFriendRequests = catchAsync(async (req, res) => {
   });
 });
 
+const getFriendsList = catchAsync(async (req, res) => {
+  const result = await FriendServices.getFriendsListFromDB(req?.user);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Friend list retrieved successfully!',
+    data: result,
+  });
+});
+
 export const FriendControllers = {
+  getFriendSuggestions,
   sendFriendRequest,
   cancelFriendRequest,
   acceptFriendRequest,
   getAllReceivedFriendRequests,
   getAllSentFriendRequests,
+  getFriendsList,
 };

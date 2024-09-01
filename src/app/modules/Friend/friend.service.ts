@@ -5,6 +5,25 @@ import httpStatus from 'http-status';
 import { Friend } from './friend.model';
 import { User } from '../User/user.model';
 
+const getFriendSuggestionsFromDB = async (user: JwtPayload) => {
+  const usersWithSimilarInterests = await User.find({
+    interests: { $in: user?.interests },
+    _id: { $ne: user?.userId }, // Exclude the current user
+  });
+
+  const friendRequests = await Friend.find({
+    $or: [{ senderId: user?.userId }, { recipientId: user?.userId }],
+  });
+
+  const friendUserIds = friendRequests
+    .map((request) => request?.senderId)
+    .concat(friendRequests.map((request) => request?.recipientId));
+
+  return usersWithSimilarInterests.filter(
+    (user) => !friendUserIds.includes(user?._id),
+  );
+};
+
 const sendFriendRequestToDB = async (user: JwtPayload, payload: IFriend) => {
   // Check if the user is trying to send a friend request to themselves
   if (user?.userId === payload?.recipientId) {
@@ -123,10 +142,39 @@ const getAllReceivedFriendRequestsFromDB = async (user: JwtPayload) => {
   return User.find({ _id: { $in: userIds } });
 };
 
+const getFriendsListFromDB = async (user: JwtPayload) => {
+  // Fetch all friend requests that involve the user and have been accepted
+  const friendRequests = await Friend.find({
+    $or: [
+      { senderId: user?.userId, status: 'accepted' },
+      { recipientId: user?.userId, status: 'accepted' },
+    ],
+  });
+
+  // Extract the IDs of friends dynamically depending on the user's role in the request
+  const friendUserIds = friendRequests
+    .map((request) => {
+      // If the user is the sender, the friend is the recipient
+      if (request?.senderId === user?.userId) {
+        return request?.recipientId;
+      }
+      // If the user is the recipient, the friend is the sender
+      return request?.senderId;
+    })
+    .filter((friendId) => friendId !== user?.userId); // Exclude the user's own ID
+
+  // Fetch the user documents of all friends
+  const friendsList = await User.find({ _id: { $in: friendUserIds } });
+
+  return friendsList;
+};
+
 export const FriendServices = {
+  getFriendSuggestionsFromDB,
   sendFriendRequestToDB,
   cancelFriendRequestToDB,
   acceptFriendRequestToDB,
   getAllSentFriendRequestsFromDB,
   getAllReceivedFriendRequestsFromDB,
+  getFriendsListFromDB,
 };
