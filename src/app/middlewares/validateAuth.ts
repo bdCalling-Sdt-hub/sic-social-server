@@ -46,13 +46,8 @@ const validateAuth = (...requiredRoles: TUserRole[]) => {
         throw new ApiError(httpStatus.FORBIDDEN, 'User account is blocked!');
       }
 
-      // If the user is deleted, throw a FORBIDDEN error.
-      if (existingUser?.isDeleted) {
-        throw new ApiError(httpStatus.FORBIDDEN, 'User account is deleted!');
-      }
-
       if (
-        existingUser.passwordChangedAt &&
+        existingUser?.passwordChangedAt &&
         (await User.isJWTIssuedBeforePasswordChanged(
           existingUser?.passwordChangedAt,
           decoded?.iat as number,
