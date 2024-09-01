@@ -6,22 +6,31 @@ import { Friend } from './friend.model';
 import { User } from '../User/user.model';
 
 const getFriendSuggestionsFromDB = async (user: JwtPayload) => {
+  // Step 1: Find all users with similar interests excluding the current user
   const usersWithSimilarInterests = await User.find({
     interests: { $in: user?.interests },
     _id: { $ne: user?.userId }, // Exclude the current user
   });
 
+  // Step 2: Find all friend requests where the current user is involved
   const friendRequests = await Friend.find({
     $or: [{ senderId: user?.userId }, { recipientId: user?.userId }],
   });
 
-  const friendUserIds = friendRequests
-    .map((request) => request?.senderId)
-    .concat(friendRequests.map((request) => request?.recipientId));
-
-  return usersWithSimilarInterests.filter(
-    (user) => !friendUserIds.includes(user?._id),
+  // Step 3: Extract user IDs of all friends and pending requests
+  const friendUserIds = new Set(
+    friendRequests?.flatMap((request) => [
+      request?.senderId,
+      request?.recipientId,
+    ]),
   );
+
+  // Step 4: Filter out users who have already received a friend request or are friends
+  const suggestions = usersWithSimilarInterests.filter(
+    (potentialFriend) => !friendUserIds?.has(potentialFriend?._id),
+  );
+
+  return suggestions;
 };
 
 const sendFriendRequestToDB = async (user: JwtPayload, payload: IFriend) => {
@@ -80,6 +89,25 @@ const cancelFriendRequestToDB = async (
   const friendRequest = await Friend.findOneAndDelete({
     senderId: user?.userId, // The sender of the request
     recipientId: payload?.recipientId, // The recipient of the request
+    status: 'pending', // Ensure the request is still pending
+  });
+
+  if (!friendRequest) {
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      'Friend request not found or already processed!',
+    );
+  }
+};
+
+const removeFriendRequestToDB = async (
+  user: JwtPayload,
+  payload: { senderId: string },
+) => {
+  // Find and delete the friend request where the current user is the sender
+  const friendRequest = await Friend.findOneAndDelete({
+    recipientId: user?.userId, // The sender of the request
+    senderId: payload?.senderId, // The recipient of the request
     status: 'pending', // Ensure the request is still pending
   });
 
@@ -173,6 +201,7 @@ export const FriendServices = {
   getFriendSuggestionsFromDB,
   sendFriendRequestToDB,
   cancelFriendRequestToDB,
+  removeFriendRequestToDB,
   acceptFriendRequestToDB,
   getAllSentFriendRequestsFromDB,
   getAllReceivedFriendRequestsFromDB,

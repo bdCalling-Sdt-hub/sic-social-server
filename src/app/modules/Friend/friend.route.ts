@@ -7,7 +7,7 @@ const router = Router();
 
 router.get('/', validateAuth(USER_ROLE.user), FriendControllers.getFriendsList);
 
-router.post(
+router.get(
   '/suggestions',
   validateAuth(USER_ROLE.user),
   FriendControllers.getFriendSuggestions,
@@ -23,6 +23,12 @@ router.post(
   '/requests/cancel',
   validateAuth(USER_ROLE.user),
   FriendControllers.cancelFriendRequest,
+);
+
+router.post(
+  '/requests/remove',
+  validateAuth(USER_ROLE.user),
+  FriendControllers.removeFriendRequest,
 );
 
 router.post(

@@ -7,7 +7,7 @@ const getFriendSuggestions = catchAsync(async (req, res) => {
   const result = await FriendServices.getFriendSuggestionsFromDB(req?.user);
 
   sendResponse(res, {
-    statusCode: httpStatus.CREATED,
+    statusCode: httpStatus.OK,
     success: true,
     message: 'Friend suggestions retrieved successfully!',
     data: result,
@@ -21,7 +21,7 @@ const sendFriendRequest = catchAsync(async (req, res) => {
   );
 
   sendResponse(res, {
-    statusCode: httpStatus.CREATED,
+    statusCode: httpStatus.OK,
     success: true,
     message: 'Friend request sent successfully!',
     data: result,
@@ -38,6 +38,20 @@ const cancelFriendRequest = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Friend request canceled successfully!',
+    data: result,
+  });
+});
+
+const removeFriendRequest = catchAsync(async (req, res) => {
+  const result = await FriendServices.removeFriendRequestToDB(
+    req?.user,
+    req?.body,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Friend request removed successfully!',
     data: result,
   });
 });
@@ -95,6 +109,7 @@ export const FriendControllers = {
   getFriendSuggestions,
   sendFriendRequest,
   cancelFriendRequest,
+  removeFriendRequest,
   acceptFriendRequest,
   getAllReceivedFriendRequests,
   getAllSentFriendRequests,
