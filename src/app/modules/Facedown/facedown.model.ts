@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IFacedown } from './faceDown.interface';
+import { IFacedown } from './facedown.interface';
 
 const facedownSchema = new Schema<IFacedown>(
   {
