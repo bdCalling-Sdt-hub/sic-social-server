@@ -4,6 +4,7 @@ import colors from 'colors';
 
 // Delete a single file if it exists.
 const unlinkFile = (filePath: string) => {
+
   // Check if the file exists
   if (fs.existsSync(filePath)) {
     // Attempt to delete each file
@@ -19,6 +20,8 @@ const unlinkFile = (filePath: string) => {
   } else {
     logger.warn(colors.bgYellow(`File does not exist: ${filePath}!`));
   }
+
+  
 };
 
 // Delete multiple files.

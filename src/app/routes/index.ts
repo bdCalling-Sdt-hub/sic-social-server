@@ -7,6 +7,8 @@ import { AboutSicRoutes } from '../modules/About Sic/aboutSic.route';
 import { TermsAndConditionRoutes } from '../modules/TermsAndConditions/termsAndConditions.route';
 import { FriendRoutes } from '../modules/Friend/friend.route';
 import { SicGuidelinesRoutes } from '../modules/Sic Guidelines/sicGuidelines.route';
+import { ChatRoutes } from '../modules/chat/chat.route';
+import { MessageRoutes } from '../modules/message/message.route';
 
 const router = Router();
 
@@ -14,6 +16,8 @@ const routes = [
   { path: '/users', route: UserRoutes },
   { path: '/auth', route: AuthRoutes },
   { path: '/friends', route: FriendRoutes },
+  { path: '/chat', route: ChatRoutes },
+  { path: '/message', route: MessageRoutes },
 
   // Settings
   { path: '/faqs', route: FaqRoutes },

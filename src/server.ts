@@ -1,12 +1,14 @@
-import { Server } from 'http';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from 'mongoose';
 import app from './app';
 import config from './app/config';
 import seedSuperAdmin from './app/DB';
 import { errorLogger, logger } from './app/utils/winstonLogger';
 import colors from 'colors';
+import { Server } from 'socket.io';
+import { socketHelper } from './app/helpers/socketHelper';
 
-let server: Server;
+let server:any;
 
 async function main() {
   try {
@@ -28,6 +30,19 @@ async function main() {
         ),
       );
     });
+
+    //socket
+    const io = new Server(server, {
+      pingTimeout: 60000,
+      cors: {
+        origin: '*',
+      },
+    });
+
+    socketHelper.socket(io);
+    global.io = io;
+
+
   } catch (error) {
     errorLogger.error(
       colors.bgCyan.bold(`❌ MongoDB connection error: ${error}`),

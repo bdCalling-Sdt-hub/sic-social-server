@@ -14,6 +14,9 @@ app.use(cors());
 app.use(cookieParser());
 app.use(requestLogger);
 
+//static file check
+app.use(express.static('uploads'));
+
 // Default route for the root URL
 app.get('/', (req: Request, res: Response) => {
   const serverStatus = {

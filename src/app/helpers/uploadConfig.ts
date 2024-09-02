@@ -19,6 +19,8 @@ const storage = multer.diskStorage({
     const { fieldname } = file;
     // Determine upload folder based on fieldname
     const uploadFolder = getUploadFolder(fieldname);
+console.log({getUploadFolder})
+
 
     if (!uploadFolder) {
       throw new ApiError(
@@ -58,6 +60,7 @@ const upload = multer({
     // Retrieve the list of supported formats for the given fieldname
     const supportedFormats = FIELD_NAME_TO_FORMATS[fieldname];
 
+    console.log({supportedFormats})
     if (supportedFormats) {
       if (supportedFormats?.includes(mimetype)) {
         uploadedFiles.length = 0; // Clear the list for next batch
