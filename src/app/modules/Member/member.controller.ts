@@ -3,19 +3,19 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { MemberServices } from './member.service';
 
-const createMember = catchAsync(async (req, res) => {
-  const result = await MemberServices.createMemberToDB(req?.user, req?.body);
+const addMember = catchAsync(async (req, res) => {
+  const result = await MemberServices.addMemberToDB(req?.user, req?.body);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
-    message: 'Member created successfully!',
+    message: 'Member added successfully!',
     data: result,
   });
 });
 
 const getMembers = catchAsync(async (req, res) => {
-  const result = await MemberServices.getMembersFromDB();
+  const result = await MemberServices.getMembersFromDB(req?.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -25,34 +25,19 @@ const getMembers = catchAsync(async (req, res) => {
   });
 });
 
-const updateMemberById = catchAsync(async (req, res) => {
-  const result = await MemberServices.updateMemberByIdFromDB(
-    req?.params?.id,
-    req?.body,
-  );
+const removeMemberById = catchAsync(async (req, res) => {
+  const result = await MemberServices.removeMemberByIdFromDB(req?.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Member updated successfully!',
-    data: result,
-  });
-});
-
-const deleteMemberById = catchAsync(async (req, res) => {
-  const result = await MemberServices.deleteMemberByIdFromDB(req?.params?.id);
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Member deleted successfully!',
+    message: 'Member removed successfully!',
     data: result,
   });
 });
 
 export const MemberControllers = {
-  createMember,
+  addMember,
   getMembers,
-  updateMemberById,
-  deleteMemberById,
+  removeMemberById,
 };

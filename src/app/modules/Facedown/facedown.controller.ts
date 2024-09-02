@@ -30,7 +30,7 @@ const getFacedowns = catchAsync(async (req, res) => {
 
 const updateFacedownById = catchAsync(async (req, res) => {
   const result = await FacedownServices.updateFacedownByIdFromDB(
-    req?.params?.id,
+    req?.params?.facedownId,
     req?.body,
   );
 
@@ -44,7 +44,7 @@ const updateFacedownById = catchAsync(async (req, res) => {
 
 const deleteFacedownById = catchAsync(async (req, res) => {
   const result = await FacedownServices.deleteFacedownByIdFromDB(
-    req?.params?.id,
+    req?.params?.facedownId,
   );
 
   sendResponse(res, {
