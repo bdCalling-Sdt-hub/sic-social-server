@@ -1,9 +1,10 @@
 import { ObjectId } from 'mongoose';
 
-export interface IFaceDown {
+export interface IFacedown {
   createdBy: ObjectId; // Reference to the User
   name: string;
-  bookImage: string;
+  image: string;
+  bookImage?: string;
   bookUrl: string;
   description?: string;
   schedule: 'weekly' | 'monthly' | 'yearly';

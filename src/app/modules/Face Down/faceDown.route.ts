@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import validateAuth from '../../middlewares/validateAuth';
 import { USER_ROLE } from '../User/user.constant';
-import { FaqControllers } from './faceDown.controller';
+import { FaqControllers } from './facedown.controller';
 
 const router = Router();
 

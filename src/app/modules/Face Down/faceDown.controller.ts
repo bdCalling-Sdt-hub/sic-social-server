@@ -1,7 +1,7 @@
 import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
-import { FaqServices } from './faceDown.service';
+import { FaqServices } from './facedown.service';
 
 const createFaq = catchAsync(async (req, res) => {
   const result = await FaqServices.createFaqToDB(req?.user, req?.body);

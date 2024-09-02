@@ -1,8 +1,8 @@
 import { JwtPayload } from 'jsonwebtoken';
-import { IFaq } from './faceDown.interface';
+import { IFaq } from './facedown.interface';
 import ApiError from '../../errors/ApiError';
 import httpStatus from 'http-status';
-import { Faq } from './faceDown.model';
+import { Faq } from './facedown.model';
 
 const createFaqToDB = async (user: JwtPayload, payload: IFaq) => {
   payload.createdBy = user?.userId;

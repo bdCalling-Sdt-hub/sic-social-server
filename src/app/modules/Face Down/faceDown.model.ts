@@ -1,24 +1,40 @@
 import { Schema, model } from 'mongoose';
-import { IFaq } from './faceDown.interface';
+import { IFacedown } from './faceDown.interface';
 
-const faqSchema = new Schema<IFaq>(
+const facedownSchema = new Schema<IFacedown>(
   {
     createdBy: {
       type: Schema.Types.ObjectId, // MongoDB ObjectId type
       ref: 'User', // Reference to the 'User' model
       required: true,
     },
-    question: {
+    name: {
       type: String,
       required: true,
     },
-    answer: {
+    image: {
       type: String,
+      required: true,
+    },
+    bookImage: {
+      type: String,
+    },
+    bookUrl: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    schedule: {
+      type: String,
+      enum: ['weekly', 'monthly', 'yearly'],
       required: true,
     },
   },
   { timestamps: true },
 );
 
-// Create the Faq model using the schema
-export const Faq = model<IFaq>('Faq', faqSchema);
+// Create the Facedown model using the schema
+export const Facedown = model<IFacedown>('Facedown', facedownSchema);
