@@ -7,6 +7,7 @@ const createFacedown = catchAsync(async (req, res) => {
   const result = await FacedownServices.createFacedownToDB(
     req?.user,
     req?.body,
+    req?.files,
   );
 
   sendResponse(res, {
