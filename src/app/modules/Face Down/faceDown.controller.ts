@@ -1,32 +1,35 @@
 import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
-import { FaqServices } from './facedown.service';
+import { FacedownServices } from './faceDown.service';
 
-const createFaq = catchAsync(async (req, res) => {
-  const result = await FaqServices.createFaqToDB(req?.user, req?.body);
+const createFacedown = catchAsync(async (req, res) => {
+  const result = await FacedownServices.createFacedownToDB(
+    req?.user,
+    req?.body,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
-    message: 'Faq created successfully!',
+    message: 'Facedown created successfully!',
     data: result,
   });
 });
 
-const getFaqs = catchAsync(async (req, res) => {
-  const result = await FaqServices.getFaqsFromDB();
+const getFacedowns = catchAsync(async (req, res) => {
+  const result = await FacedownServices.getFacedownsFromDB();
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Faqs retrieved successfully!',
+    message: 'Facedowns retrieved successfully!',
     data: result,
   });
 });
 
-const updateFaqById = catchAsync(async (req, res) => {
-  const result = await FaqServices.updateFaqByIdFromDB(
+const updateFacedownById = catchAsync(async (req, res) => {
+  const result = await FacedownServices.updateFacedownByIdFromDB(
     req?.params?.id,
     req?.body,
   );
@@ -34,25 +37,27 @@ const updateFaqById = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Faq updated successfully!',
+    message: 'Facedown updated successfully!',
     data: result,
   });
 });
 
-const deleteFaqById = catchAsync(async (req, res) => {
-  const result = await FaqServices.deleteFaqByIdFromDB(req?.params?.id);
+const deleteFacedownById = catchAsync(async (req, res) => {
+  const result = await FacedownServices.deleteFacedownByIdFromDB(
+    req?.params?.id,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Faq deleted successfully!',
+    message: 'Facedown deleted successfully!',
     data: result,
   });
 });
 
-export const FaqControllers = {
-  createFaq,
-  getFaqs,
-  updateFaqById,
-  deleteFaqById,
+export const FacedownControllers = {
+  createFacedown,
+  getFacedowns,
+  updateFacedownById,
+  deleteFacedownById,
 };

@@ -1,29 +1,20 @@
 import { Router } from 'express';
 import validateAuth from '../../middlewares/validateAuth';
 import { USER_ROLE } from '../User/user.constant';
-import { FaqControllers } from './facedown.controller';
+import { FacedownControllers } from './faceDown.controller';
 
 const router = Router();
 
 router
   .route('/')
 
-  .get(FaqControllers.getFaqs)
-  .post(
-    validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
-    FaqControllers.createFaq,
-  );
+  .get(FacedownControllers.getFacedowns)
+  .post(validateAuth(USER_ROLE.user), FacedownControllers.createFacedown);
 
 router
   .route('/:id')
 
-  .patch(
-    validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
-    FaqControllers.updateFaqById,
-  )
-  .delete(
-    validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
-    FaqControllers.deleteFaqById,
-  );
+  .patch(validateAuth(USER_ROLE.user), FacedownControllers.updateFacedownById)
+  .delete(validateAuth(USER_ROLE.user), FacedownControllers.deleteFacedownById);
 
-export const FaqRoutes = router;
+export const FacedownRoutes = router;
