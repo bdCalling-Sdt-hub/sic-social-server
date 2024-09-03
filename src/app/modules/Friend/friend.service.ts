@@ -181,21 +181,19 @@ const getFriendsListFromDB = async (user: JwtPayload) => {
   });
 
   // Extract the IDs of friends dynamically depending on the user's role in the request
-  const friendUserIds = friendRequests
-    .map((request) => {
-      // If the user is the sender, the friend is the recipient
-      if (request?.senderId === user?.userId) {
-        return request?.recipientId;
-      }
-      // If the user is the recipient, the friend is the sender
-      return request?.senderId;
-    })
-    .filter((friendId) => friendId !== user?.userId); // Exclude the user's own ID
+  const friendUserIds = friendRequests?.map((request) => {
+    // If the user is the sender, the friend is the recipient
+    if (request?.senderId?.toString() === user?.userId) {
+      return request?.recipientId;
+    }
+    // If the user is the recipient, the friend is the sender
+    return request?.senderId;
+  });
 
   // Fetch the user documents of all friends
-  const friendsList = await User.find({ _id: { $in: friendUserIds } });
-
-  return friendsList;
+  return await User.find({ _id: { $in: friendUserIds } }).select(
+    'fullName avatar',
+  );
 };
 
 export const FriendServices = {
