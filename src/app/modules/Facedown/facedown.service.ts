@@ -68,7 +68,9 @@ const deleteFacedownByIdFromDB = async (facedownId: string) => {
   }
 
   // Delete the images if they exist
-  unlinkFile(existingFacedown?.image);
+  if (existingFacedown?.image) {
+    unlinkFile(existingFacedown?.image);
+  }
 
   if (existingFacedown?.bookImage) {
     unlinkFile(existingFacedown?.bookImage);

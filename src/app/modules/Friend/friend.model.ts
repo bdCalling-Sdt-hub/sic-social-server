@@ -32,5 +32,33 @@ friendSchema.statics.getTotalFriendsCount = async function (userId: string) {
   return count;
 };
 
+// Static method to count mutual friends between two users
+friendSchema.statics.getMutualFriendsCount = async function (
+  userId1: string,
+  userId2: string,
+) {
+  // Find friends of the first user
+  const user1Friends = await this.find({
+    $or: [{ senderId: userId1 }, { recipientId: userId1 }],
+    status: 'approved',
+  }).select('senderId recipientId -_id');
+
+  // Extract user IDs from user1Friends
+  const user1FriendIds = user1Friends.map((friend) =>
+    friend.senderId === userId1 ? friend.recipientId : friend.senderId,
+  );
+
+  // Find mutual friends count by checking if user2's friends are in user1's friends list
+  const mutualFriendsCount = await this.countDocuments({
+    $or: [
+      { senderId: userId2, recipientId: { $in: user1FriendIds } },
+      { recipientId: userId2, senderId: { $in: user1FriendIds } },
+    ],
+    status: 'approved',
+  });
+
+  return mutualFriendsCount;
+};
+
 // Create the Friend model using the schema
 export const Friend = model<IFriend, FriendModel>('Friend', friendSchema);
