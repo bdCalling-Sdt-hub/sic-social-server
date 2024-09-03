@@ -13,6 +13,7 @@ async function main() {
     const connectionInstance = await mongoose.connect(
       `${config.dbURL}/${config.collectionName}`,
     );
+
     seedSuperAdmin();
 
     logger.info(
