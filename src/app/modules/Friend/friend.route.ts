@@ -28,7 +28,7 @@ router.post(
 router.post(
   '/requests/remove',
   validateAuth(USER_ROLE.user),
-  FriendControllers.removeFriendRequest,
+  FriendControllers.removeFriend,
 );
 
 router.post(

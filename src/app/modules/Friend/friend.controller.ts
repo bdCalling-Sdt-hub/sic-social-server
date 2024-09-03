@@ -42,16 +42,13 @@ const cancelFriendRequest = catchAsync(async (req, res) => {
   });
 });
 
-const removeFriendRequest = catchAsync(async (req, res) => {
-  const result = await FriendServices.removeFriendRequestToDB(
-    req?.user,
-    req?.body,
-  );
+const removeFriend = catchAsync(async (req, res) => {
+  const result = await FriendServices.removeFriendFromDB(req?.user, req?.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Friend request removed successfully!',
+    message: 'Friend removed successfully!',
     data: result,
   });
 });
@@ -109,7 +106,7 @@ export const FriendControllers = {
   getFriendSuggestions,
   sendFriendRequest,
   cancelFriendRequest,
-  removeFriendRequest,
+  removeFriend,
   acceptFriendRequest,
   getAllReceivedFriendRequests,
   getAllSentFriendRequests,
