@@ -11,6 +11,7 @@ router
   .route('/')
 
   .get(FacedownControllers.getFacedowns)
+
   .post(
     validateAuth(USER_ROLE.user),
     upload.fields([

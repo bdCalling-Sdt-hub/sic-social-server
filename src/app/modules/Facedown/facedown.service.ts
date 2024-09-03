@@ -5,6 +5,8 @@ import ApiError from '../../errors/ApiError';
 import httpStatus from 'http-status';
 import { IFacedown } from './facedown.interface';
 import { Facedown } from './facedown.model';
+import getPathAfterUploads from '../../helpers/getPathAfterUploads';
+import { unlinkFile } from '../../helpers/fileHandler';
 
 const createFacedownToDB = async (
   user: JwtPayload,
@@ -12,21 +14,17 @@ const createFacedownToDB = async (
   files: any,
 ) => {
   if (files && files?.image) {
-    payload.image = files?.image?.path?.replace(/\\/g, '/'); // Normalize the file path to use forward slashes
-
-    console.log(files?.image);
+    payload.image = getPathAfterUploads(files?.image?.[0]?.path);
   }
 
   if (files && files?.bookImage) {
-    payload.bookImage = files?.bookImage?.path?.replace(/\\/g, '/'); // Normalize the file path to use forward slashes
-
-    console.log(files?.bookImage);
+    payload.bookImage = getPathAfterUploads(files?.bookImage?.[0]?.path);
   }
 
   payload.createdBy = user?.userId;
 
-  // const result = await Facedown.create(payload);
-  // return result;
+  const result = await Facedown.create(payload);
+  return result;
 };
 
 const getFacedownsFromDB = async () => {
@@ -59,15 +57,25 @@ const updateFacedownByIdFromDB = async (
 };
 
 const deleteFacedownByIdFromDB = async (facedownId: string) => {
-  const result = await Facedown.findByIdAndDelete(facedownId);
+  const existingFacedown = await Facedown.findByIdAndDelete(facedownId);
 
   // Handle case where no Facedown is found
-  if (!result) {
+  if (!existingFacedown) {
     throw new ApiError(
       httpStatus.NOT_FOUND,
       `Facedown with ID: ${facedownId} not found!`,
     );
   }
+
+  // Delete the images if they exist
+  unlinkFile(existingFacedown?.image);
+
+  if (existingFacedown?.bookImage) {
+    unlinkFile(existingFacedown?.bookImage);
+  }
+
+  // Proceed to delete the Facedown record
+  await Facedown.findByIdAndDelete(facedownId);
 };
 
 export const FacedownServices = {
