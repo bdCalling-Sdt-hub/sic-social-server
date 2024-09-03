@@ -13,7 +13,6 @@ const sendMessage = catchAsync(async (req: Request, res: Response) => {
   const messageData:any = {
     chatId: data.chatId,
     sender: user?.userId,
-    messageType: 'audio',
   };
 
   if (req.files && 'image' in req.files && req.files.image[0]) {
@@ -21,6 +20,7 @@ const sendMessage = catchAsync(async (req: Request, res: Response) => {
     messageData.messageType = fileType(req.files.image[0].mimetype);
   }
 
+ 
   if (req.files && 'audio' in req.files && req.files.audio[0]) {
     messageData.message = `/audios/${req.files.audio[0].filename}`;
     messageData.messageType = fileType(req.files.audio[0].mimetype);

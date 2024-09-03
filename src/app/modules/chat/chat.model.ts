@@ -8,7 +8,16 @@ const chatSchema = new Schema<IChat>(
         type: Schema.Types.ObjectId,
         ref: 'User'
       }
-    ] 
+    ],
+    type:{
+      type: String,
+      enum: ["public", "private"],
+      default: "private"
+    },
+    facedown:{
+      type: Schema.Types.ObjectId,
+      ref: 'Facedown'
+    } 
   },
   { timestamps: true },
 )
