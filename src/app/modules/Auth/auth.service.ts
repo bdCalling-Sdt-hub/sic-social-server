@@ -15,34 +15,61 @@ const verifyOtpToDB = async (payload: {
   otp: number;
   verificationType: 'emailVerification' | 'passwordReset';
 }) => {
+  // Check if the provided verificationType is valid
+  const validVerificationTypes = new Set([
+    'emailVerification',
+    'passwordReset',
+  ]);
+
+  if (
+    !payload?.verificationType ||
+    !validVerificationTypes?.has(payload?.verificationType)
+  ) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Invalid or missing verification type provided!',
+    );
+  }
+
   // Check if a user with the provided email exists in the database
-  const existingUser = await User.isUserExistsByEmail(payload?.email);
+  const existingUser = await User.isUserExistsByEmail(payload.email);
 
   // Handle case where the user does not exist
-  if (!existingUser && payload?.verificationType === 'passwordReset') {
+  if (!existingUser) {
     throw new ApiError(
       httpStatus.NOT_FOUND,
       'User with this email does not exist!',
     );
   }
 
-  // Verify the OTP
-  await User.verifyOtp(payload?.email, payload?.otp);
+  if (payload.verificationType === 'emailVerification') {
+    // Check if the email is already verified
+    if (existingUser?.isVerified) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Email is already verified!');
+    }
 
-  // If verification type is password reset, generate an access token
-  if (payload?.verificationType === 'passwordReset') {
+    // Verify the OTP for email verification
+    await User.verifyOtp(payload.email, payload.otp);
+  } else if (payload?.verificationType === 'passwordReset') {
+    if (!existingUser.isVerified) {
+      throw new ApiError(httpStatus.FORBIDDEN, 'User account is not verified!');
+    }
+
+    // Verify the OTP for password reset
+    await User.verifyOtp(payload.email, payload.otp);
+
     // Prepare the payload for JWT token generation
     const jwtPayload = {
-      userId: existingUser?._id,
-      email: existingUser?.email,
-      role: existingUser?.role,
+      userId: existingUser._id,
+      email: existingUser.email,
+      role: existingUser.role,
     };
 
     // Generate a JWT access token for the authenticated user
     const accessToken = createJwtToken(
       jwtPayload,
       config.jwtAccessSecret as string,
-      '10m',
+      '5m',
     );
 
     return {
@@ -86,7 +113,7 @@ const resendVerificationEmailToDB = async (payload: { email: string }) => {
 
   const emailOptions = {
     to: existingUser?.email, // Receiver's email address
-    subject: 'Verify Your Email Address - Romzz',
+    subject: 'Verify Your Email Address - Sic Social',
     html: verifyEmailTemplate, // HTML content of the email
   };
 
@@ -121,10 +148,6 @@ const loginUserToDB = async (payload: {
 
   if (existingUser?.isBlocked) {
     throw new ApiError(httpStatus.FORBIDDEN, 'User account is blocked!');
-  }
-
-  if (existingUser?.isDeleted) {
-    throw new ApiError(httpStatus.FORBIDDEN, 'User account is deleted.');
   }
 
   // Verify the provided password
@@ -221,10 +244,6 @@ const requestPasswordResetToDB = async (payload: { email: string }) => {
     throw new ApiError(httpStatus.FORBIDDEN, 'User account is blocked!');
   }
 
-  if (existingUser?.isDeleted) {
-    throw new ApiError(httpStatus.FORBIDDEN, 'User account is deleted.');
-  }
-
   // Generate OTP for password reset and set its expiration
   const otp = generateOtp();
   const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // OTP expires in 5 minutes
@@ -248,7 +267,7 @@ const requestPasswordResetToDB = async (payload: { email: string }) => {
 
   const emailOptions = {
     to: payload?.email,
-    subject: 'Reset Your Password - Romzz',
+    subject: 'Reset Your Password - Sic Social',
     html: forgetPasswordTemplate, // HTML content of the email
   };
 
@@ -287,10 +306,6 @@ const resetPasswordToDB = async (
 
   if (existingUser?.isBlocked) {
     throw new ApiError(httpStatus.FORBIDDEN, 'User account is blocked!');
-  }
-
-  if (existingUser?.isDeleted) {
-    throw new ApiError(httpStatus.FORBIDDEN, 'User account is deleted.');
   }
 
   // Ensure the new password is different from the current password
@@ -341,11 +356,6 @@ const issueNewAccessToken = async (token: string) => {
   // If the user is blocked, throw a FORBIDDEN error.
   if (existingUser?.isBlocked) {
     throw new ApiError(httpStatus.FORBIDDEN, 'User account is blocked!');
-  }
-
-  // If the user is deleted, throw a FORBIDDEN error.
-  if (existingUser?.isDeleted) {
-    throw new ApiError(httpStatus.FORBIDDEN, 'User account is deleted!');
   }
 
   if (

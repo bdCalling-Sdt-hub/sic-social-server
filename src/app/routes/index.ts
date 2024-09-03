@@ -2,13 +2,14 @@ import { Router } from 'express';
 import { UserRoutes } from '../modules/User/user.route';
 import { AuthRoutes } from '../modules/Auth/auth.route';
 import { FaqRoutes } from '../modules/FAQ/faq.route';
-import { PrivacyPolicyRoutes } from '../modules/Privacy Policy/privacyPolicy.route';
-import { AboutSicRoutes } from '../modules/About Sic/aboutSic.route';
+import { PrivacyPolicyRoutes } from '../modules/PrivacyPolicy/privacyPolicy.route';
+import { AboutSicRoutes } from '../modules/AboutSic/aboutSic.route';
 import { TermsAndConditionRoutes } from '../modules/TermsAndConditions/termsAndConditions.route';
 import { FriendRoutes } from '../modules/Friend/friend.route';
-import { SicGuidelinesRoutes } from '../modules/Sic Guidelines/sicGuidelines.route';
 import { ChatRoutes } from '../modules/chat/chat.route';
 import { MessageRoutes } from '../modules/message/message.route';
+import { SicGuidelinesRoutes } from '../modules/SicGuidelines/sicGuidelines.route';
+import { FacedownRoutes } from '../modules/Facedown/facedown.route';
 
 const router = Router();
 
@@ -18,6 +19,7 @@ const routes = [
   { path: '/friends', route: FriendRoutes },
   { path: '/chat', route: ChatRoutes },
   { path: '/message', route: MessageRoutes },
+  { path: '/facedowns', route: FacedownRoutes },
 
   // Settings
   { path: '/faqs', route: FaqRoutes },

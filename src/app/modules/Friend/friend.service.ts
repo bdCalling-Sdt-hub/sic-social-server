@@ -6,22 +6,31 @@ import { Friend } from './friend.model';
 import { User } from '../User/user.model';
 
 const getFriendSuggestionsFromDB = async (user: JwtPayload) => {
+  // Step 1: Find all users with similar interests excluding the current user
   const usersWithSimilarInterests = await User.find({
     interests: { $in: user?.interests },
     _id: { $ne: user?.userId }, // Exclude the current user
   });
 
+  // Step 2: Find all friend requests where the current user is involved
   const friendRequests = await Friend.find({
     $or: [{ senderId: user?.userId }, { recipientId: user?.userId }],
   });
 
-  const friendUserIds = friendRequests
-    .map((request) => request?.senderId)
-    .concat(friendRequests.map((request) => request?.recipientId));
-
-  return usersWithSimilarInterests.filter(
-    (user) => !friendUserIds.includes(user?._id),
+  // Step 3: Extract user IDs of all friends and pending requests
+  const friendUserIds = new Set(
+    friendRequests?.flatMap((request) => [
+      request?.senderId,
+      request?.recipientId,
+    ]),
   );
+
+  // Step 4: Filter out users who have already received a friend request or are friends
+  const suggestions = usersWithSimilarInterests.filter(
+    (potentialFriend) => !friendUserIds?.has(potentialFriend?._id),
+  );
+
+  return suggestions;
 };
 
 const sendFriendRequestToDB = async (user: JwtPayload, payload: IFriend) => {
@@ -91,6 +100,25 @@ const cancelFriendRequestToDB = async (
   }
 };
 
+const removeFriendRequestToDB = async (
+  user: JwtPayload,
+  payload: { senderId: string },
+) => {
+  // Find and delete the friend request where the current user is the sender
+  const friendRequest = await Friend.findOneAndDelete({
+    recipientId: user?.userId, // The sender of the request
+    senderId: payload?.senderId, // The recipient of the request
+    status: 'pending', // Ensure the request is still pending
+  });
+
+  if (!friendRequest) {
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      'Friend request not found or already processed!',
+    );
+  }
+};
+
 const acceptFriendRequestToDB = async (
   user: JwtPayload,
   payload: { senderId: string },
@@ -122,24 +150,25 @@ const acceptFriendRequestToDB = async (
 };
 
 const getAllSentFriendRequestsFromDB = async (user: JwtPayload) => {
-  const friendRequests = await Friend.find({
+  const sentRequests = await Friend.find({
     senderId: user?.userId,
     status: 'pending',
   });
 
-  const userIds = friendRequests?.map((request) => request?.recipientId);
+  const userIds = sentRequests?.map((request) => request?.recipientId);
 
-  return User.find({ _id: { $in: userIds } });
+  return await User.find({ _id: { $in: userIds } }).select('fullName avatar');
 };
 
 const getAllReceivedFriendRequestsFromDB = async (user: JwtPayload) => {
-  const friendRequests = await Friend.find({
+  const receivedRequests = await Friend.find({
     recipientId: user?.userId,
     status: 'pending',
   });
-  const userIds = friendRequests.map((request) => request.senderId);
 
-  return User.find({ _id: { $in: userIds } });
+  const userIds = receivedRequests?.map((request) => request?.senderId);
+
+  return await User.find({ _id: { $in: userIds } }).select('fullName avatar');
 };
 
 const getFriendsListFromDB = async (user: JwtPayload) => {
@@ -152,27 +181,26 @@ const getFriendsListFromDB = async (user: JwtPayload) => {
   });
 
   // Extract the IDs of friends dynamically depending on the user's role in the request
-  const friendUserIds = friendRequests
-    .map((request) => {
-      // If the user is the sender, the friend is the recipient
-      if (request?.senderId === user?.userId) {
-        return request?.recipientId;
-      }
-      // If the user is the recipient, the friend is the sender
-      return request?.senderId;
-    })
-    .filter((friendId) => friendId !== user?.userId); // Exclude the user's own ID
+  const friendUserIds = friendRequests?.map((request) => {
+    // If the user is the sender, the friend is the recipient
+    if (request?.senderId?.toString() === user?.userId) {
+      return request?.recipientId;
+    }
+    // If the user is the recipient, the friend is the sender
+    return request?.senderId;
+  });
 
   // Fetch the user documents of all friends
-  const friendsList = await User.find({ _id: { $in: friendUserIds } });
-
-  return friendsList;
+  return await User.find({ _id: { $in: friendUserIds } }).select(
+    'fullName avatar',
+  );
 };
 
 export const FriendServices = {
   getFriendSuggestionsFromDB,
   sendFriendRequestToDB,
   cancelFriendRequestToDB,
+  removeFriendRequestToDB,
   acceptFriendRequestToDB,
   getAllSentFriendRequestsFromDB,
   getAllReceivedFriendRequestsFromDB,

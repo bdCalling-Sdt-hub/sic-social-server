@@ -34,7 +34,6 @@ const createUserToDB = async (payload: IUser) => {
   payload.role = 'user';
   payload.status = 'in-progress';
   payload.isBlocked = false;
-  payload.isDeleted = false;
 
   // Generate OTP and set expiration for email verification
   const otp = generateOtp();
@@ -62,7 +61,7 @@ const createUserToDB = async (payload: IUser) => {
   // Email options for sending the verification email
   const emailOptions = {
     to: payload?.email, // Receiver's email address (user's email)
-    subject: 'Verify Your Email Address - Roomz', // Subject of the email
+    subject: 'Verify Your Email Address - Sic Social', // Subject of the email
     html: verifyEmailTemplate, // HTML content of the email
   };
 
@@ -87,7 +86,6 @@ const createAdminToDB = async (payload: IUser) => {
   payload.status = 'active';
   payload.isVerified = true;
   payload.isBlocked = false;
-  payload.isDeleted = false;
 
   // Create the new admin in the database
   await User.create(payload);
