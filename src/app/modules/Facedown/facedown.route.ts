@@ -13,7 +13,7 @@ router
   .get(FacedownControllers.getFacedowns)
 
   .post(
-    validateAuth(USER_ROLE.user),
+    validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
     upload.fields([
       { name: 'image', maxCount: 1 },
       { name: 'bookImage', maxCount: 1 },
@@ -24,17 +24,29 @@ router
 router
   .route('/:facedownId')
 
-  .patch(validateAuth(USER_ROLE.user), FacedownControllers.updateFacedownById)
-  .delete(validateAuth(USER_ROLE.user), FacedownControllers.deleteFacedownById);
+  .patch(
+    validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+    FacedownControllers.updateFacedownById,
+  )
+  .delete(
+    validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+    FacedownControllers.deleteFacedownById,
+  );
 
 router
   .route('/members')
 
   .get(MemberControllers.getMembers)
-  .post(validateAuth(USER_ROLE.user), MemberControllers.addMember);
+  .post(
+    validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+    MemberControllers.addMember,
+  );
 
 router
   .route('/members')
-  .delete(validateAuth(USER_ROLE.user), MemberControllers.removeMemberById);
+  .delete(
+    validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+    MemberControllers.removeMemberById,
+  );
 
 export const FacedownRoutes = router;

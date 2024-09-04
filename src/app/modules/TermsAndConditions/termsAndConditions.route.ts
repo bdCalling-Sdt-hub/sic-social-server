@@ -10,13 +10,13 @@ router
 
   .get(TermsAndConditionControllers.getTermsAndConditions)
   .post(
-    validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
+    validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
     TermsAndConditionControllers.createTermsAndConditions,
   );
 
 router.patch(
   '/:id',
-  validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
+  validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
   TermsAndConditionControllers.updateTermsAndConditionsById,
 );
 

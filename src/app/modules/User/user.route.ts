@@ -10,19 +10,19 @@ const router = Router();
 
 router.get(
   '/',
-  validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
+  validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
   UserControllers.getUsers,
 );
 
 router.get(
   '/admins',
-  validateAuth(USER_ROLE.superAdmin),
+  validateAuth(USER_ROLE.SUPERADMIN),
   UserControllers.getAdmins,
 );
 
 router.get(
   '/profile',
-  validateAuth(USER_ROLE.user, USER_ROLE.admin, USER_ROLE.superAdmin),
+  validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
   UserControllers.getUserProfile,
 );
 
@@ -37,14 +37,14 @@ router.post(
 
 router.post(
   '/create-admin',
-  validateAuth(USER_ROLE.superAdmin),
+  validateAuth(USER_ROLE.SUPERADMIN),
   validateRequest(userValidationSchema.createAdminSchema),
   UserControllers.createAdmin,
 );
 
 router.patch(
   '/update-profile',
-  validateAuth(USER_ROLE.user, USER_ROLE.admin, USER_ROLE.superAdmin),
+  validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
   upload.single('avatar'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req?.body?.data);

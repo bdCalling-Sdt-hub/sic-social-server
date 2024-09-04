@@ -7,49 +7,49 @@ const router = Router();
 
 router.get(
   '/',
-  validateAuth(USER_ROLE.user, USER_ROLE.admin, USER_ROLE.superAdmin),
+  validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
   FriendControllers.getFriendsList,
 );
 
 router.get(
   '/suggestions',
-  validateAuth(USER_ROLE.user, USER_ROLE.admin, USER_ROLE.superAdmin),
+  validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
   FriendControllers.getFriendSuggestions,
 );
 
 router.post(
   '/requests',
-  validateAuth(USER_ROLE.user, USER_ROLE.admin, USER_ROLE.superAdmin),
+  validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
   FriendControllers.sendFriendRequest,
 );
 
 router.post(
   '/requests/cancel',
-  validateAuth(USER_ROLE.user, USER_ROLE.admin, USER_ROLE.superAdmin),
+  validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
   FriendControllers.cancelFriendRequest,
 );
 
 router.post(
   '/requests/remove',
-  validateAuth(USER_ROLE.user, USER_ROLE.admin, USER_ROLE.superAdmin),
+  validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
   FriendControllers.removeFriend,
 );
 
 router.post(
   '/requests/accept',
-  validateAuth(USER_ROLE.user, USER_ROLE.admin, USER_ROLE.superAdmin),
+  validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
   FriendControllers.acceptFriendRequest,
 );
 
 router.get(
   '/requests/received',
-  validateAuth(USER_ROLE.user, USER_ROLE.admin, USER_ROLE.superAdmin),
+  validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
   FriendControllers.getAllReceivedFriendRequests,
 );
 
 router.get(
   '/requests/sent',
-  validateAuth(USER_ROLE.user, USER_ROLE.admin, USER_ROLE.superAdmin),
+  validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
   FriendControllers.getAllSentFriendRequests,
 );
 

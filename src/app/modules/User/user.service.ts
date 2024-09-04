@@ -31,7 +31,7 @@ const createUserToDB = async (payload: IUser) => {
   }
 
   // Set default values for new users
-  payload.role = 'user';
+  payload.role = 'USER';
   payload.status = 'in-progress';
   payload.isBlocked = false;
 
@@ -82,7 +82,7 @@ const createAdminToDB = async (payload: IUser) => {
   }
 
   // Set default values for new admins
-  payload.role = 'admin';
+  payload.role = 'ADMIN';
   payload.status = 'active';
   payload.isVerified = true;
   payload.isBlocked = false;

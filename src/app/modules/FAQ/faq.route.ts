@@ -11,7 +11,7 @@ router
   .get(FaqControllers.getFaqs)
 
   .post(
-    validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
+    validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
     FaqControllers.createFaq,
   );
 
@@ -19,12 +19,12 @@ router
   .route('/:id')
 
   .patch(
-    validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
+    validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
     FaqControllers.updateFaqById,
   )
 
   .delete(
-    validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
+    validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
     FaqControllers.deleteFaqById,
   );
 

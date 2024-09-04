@@ -10,10 +10,10 @@ router
   .route('/')
 
   .get(
-    validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
+    validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
     FeedbackControllers.getAllFeedbacks,
   )
 
-  .post(validateAuth(USER_ROLE.user), FeedbackControllers.createFeedback);
+  .post(validateAuth(USER_ROLE.USER), FeedbackControllers.createFeedback);
 
 export const FeedbackRoutes = router;

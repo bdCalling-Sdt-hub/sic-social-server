@@ -14,7 +14,7 @@ router
 
   // POST request to create a new "Donation" entry
   .post(
-    validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
+    validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
     upload.single('image'),
     (req: Request, res: Response, next: NextFunction) => {
       req.body = JSON.parse(req?.body?.data);
@@ -28,7 +28,7 @@ router
 
   // PATCH request to update an existing "Donation" entry by its ID
   .patch(
-    validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
+    validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
     upload.single('image'),
     (req: Request, res: Response, next: NextFunction) => {
       req.body = JSON.parse(req?.body?.data);
