@@ -9,6 +9,7 @@ router
   .route('/')
 
   .get(FaqControllers.getFaqs)
+
   .post(
     validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
     FaqControllers.createFaq,
@@ -21,6 +22,7 @@ router
     validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
     FaqControllers.updateFaqById,
   )
+
   .delete(
     validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
     FaqControllers.deleteFaqById,

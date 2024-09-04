@@ -9,6 +9,7 @@ router
   .route('/')
 
   .get(CategoryControllers.getCategories)
+
   .post(
     validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
     CategoryControllers.createCategory,
@@ -21,6 +22,7 @@ router
     validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
     CategoryControllers.updateCategoryById,
   )
+
   .delete(
     validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
     CategoryControllers.deleteCategoryById,

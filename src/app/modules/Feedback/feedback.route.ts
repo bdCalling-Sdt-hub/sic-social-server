@@ -14,9 +14,6 @@ router
     FeedbackControllers.getAllFeedbacks,
   )
 
-  .post(
-    validateAuth(USER_ROLE.user, USER_ROLE.admin, USER_ROLE.superAdmin),
-    FeedbackControllers.createFeedback,
-  );
+  .post(validateAuth(USER_ROLE.user), FeedbackControllers.createFeedback);
 
 export const FeedbackRoutes = router;

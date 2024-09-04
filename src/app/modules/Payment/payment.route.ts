@@ -9,14 +9,20 @@ router
   .route('/')
 
   // GET request to fetch all "Payment" entries
-  .get(PaymentControllers.getPayments)
+  .get(
+    validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
+    PaymentControllers.getPayments,
+  )
 
   // POST request to create a new "Payment" entry
-  .post(validateAuth(USER_ROLE.user), PaymentControllers.savePaymentInfo);
+  .post(
+    validateAuth(USER_ROLE.user, USER_ROLE.admin, USER_ROLE.superAdmin),
+    PaymentControllers.savePaymentInfo,
+  );
 
 router.post(
   '/payment-intent/create',
-  validateAuth(USER_ROLE.user),
+  validateAuth(USER_ROLE.user, USER_ROLE.admin, USER_ROLE.superAdmin),
   PaymentControllers.createPaymentIntent,
 );
 

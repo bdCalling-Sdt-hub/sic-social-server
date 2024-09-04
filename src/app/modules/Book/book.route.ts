@@ -10,6 +10,7 @@ router
   .route('/')
 
   .get(BookControllers.getBooks)
+
   .post(
     validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
     upload.fields([
@@ -24,6 +25,7 @@ router
   .route('/:id')
 
   .get(BookControllers.getBookById)
+
   .patch(
     validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
     upload.fields([
@@ -32,6 +34,7 @@ router
     ]),
     BookControllers.updateBookById,
   )
+
   .delete(
     validateAuth(USER_ROLE.admin, USER_ROLE.superAdmin),
     BookControllers.deleteBookById,
