@@ -15,14 +15,11 @@ router
   )
 
   // POST request to create a new "Payment" entry
-  .post(
-    validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
-    PaymentControllers.savePaymentInfo,
-  );
+  .post(validateAuth(USER_ROLE.USER), PaymentControllers.savePaymentInfo);
 
 router.post(
   '/payment-intent/create',
-  validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
+  validateAuth(USER_ROLE.USER),
   PaymentControllers.createPaymentIntent,
 );
 
