@@ -33,7 +33,6 @@ const createUserToDB = async (payload: IUser) => {
   // Set default values for new users
   payload.role = 'USER';
   payload.status = 'in-progress';
-  payload.isBlocked = false;
 
   // Generate OTP and set expiration for email verification
   const otp = generateOtp();
@@ -72,9 +71,12 @@ const createUserToDB = async (payload: IUser) => {
   await User.create(payload);
 };
 
-const createAdminToDB = async (payload: IUser) => {
+const createAdminToDB = async (payload: Partial<IUser>) => {
+  delete payload.isPrivateProfile;
+  delete payload.interests;
+
   // Check if a user with the provided email already exists
-  if (await User.isUserExistsByEmail(payload?.email)) {
+  if (await User.isUserExistsByEmail(payload?.email as string)) {
     throw new ApiError(
       httpStatus.CONFLICT,
       'An admin with this email already exists!',
@@ -85,7 +87,6 @@ const createAdminToDB = async (payload: IUser) => {
   payload.role = 'ADMIN';
   payload.status = 'active';
   payload.isVerified = true;
-  payload.isBlocked = false;
 
   // Create the new admin in the database
   await User.create(payload);
