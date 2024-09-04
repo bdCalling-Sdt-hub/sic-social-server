@@ -22,12 +22,12 @@ const savePaymentInfo = catchAsync(async (req, res) => {
 });
 
 const getPayments = catchAsync(async (req, res) => {
-  const result = await PaymentServices.getPaymentsFromDB();
+  const result = await PaymentServices.getPaymentsFromDB(req?.query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Payments retrieved successfully!',
+    message: 'Payment records retrieved successfully!',
     data: result,
   });
 });
