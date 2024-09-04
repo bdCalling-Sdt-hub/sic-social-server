@@ -37,4 +37,10 @@ router
     DonationControllers.updateDonationById,
   );
 
+router.post(
+  '/create-payment-intent',
+  validateAuth(USER_ROLE.user),
+  DonationControllers.createPaymentIntent,
+);
+
 export const DonationRoutes = router;

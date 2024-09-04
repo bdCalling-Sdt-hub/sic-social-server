@@ -8,6 +8,7 @@ import { TermsAndConditionRoutes } from '../modules/TermsAndConditions/termsAndC
 import { FriendRoutes } from '../modules/Friend/friend.route';
 import { SicGuidelinesRoutes } from '../modules/SicGuidelines/sicGuidelines.route';
 import { FacedownRoutes } from '../modules/Facedown/facedown.route';
+import { DonationRoutes } from '../modules/Donation/donation.route';
 
 const router = Router();
 
@@ -16,6 +17,7 @@ const routes = [
   { path: '/auth', route: AuthRoutes },
   { path: '/friends', route: FriendRoutes },
   { path: '/facedowns', route: FacedownRoutes },
+  { path: '/donations', route: DonationRoutes },
 
   // Settings
   { path: '/faqs', route: FaqRoutes },

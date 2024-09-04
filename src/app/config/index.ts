@@ -25,4 +25,6 @@ export default {
 
   smtpEmailUser: process.env.SMTP_EMAIL_USER,
   smtpEmailPass: process.env.SMTP_EMAIL_PASS,
+
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY,
 };
