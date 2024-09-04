@@ -8,7 +8,7 @@ import httpStatus from 'http-status';
 import { unlinkFile } from '../../helpers/fileHandler';
 import getPathAfterUploads from '../../helpers/getPathAfterUploads';
 
-const createDonationToDB = async (
+const createDonationPostToDB = async (
   user: JwtPayload,
   payload: IDonation,
   file: any,
@@ -79,7 +79,7 @@ const updateDonationByIdFromDB = async (
 };
 
 export const DonationServices = {
-  createDonationToDB,
+  createDonationPostToDB,
   getDonationsFromDB,
   updateDonationByIdFromDB,
 };

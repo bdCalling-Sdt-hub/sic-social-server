@@ -9,6 +9,7 @@ import { FriendRoutes } from '../modules/Friend/friend.route';
 import { SicGuidelinesRoutes } from '../modules/SicGuidelines/sicGuidelines.route';
 import { FacedownRoutes } from '../modules/Facedown/facedown.route';
 import { DonationRoutes } from '../modules/Donation/donation.route';
+import { PaymentRoutes } from '../modules/Payment/payment.route';
 
 const router = Router();
 
@@ -18,6 +19,7 @@ const routes = [
   { path: '/friends', route: FriendRoutes },
   { path: '/facedowns', route: FacedownRoutes },
   { path: '/donations', route: DonationRoutes },
+  { path: '/payments', route: PaymentRoutes },
 
   // Settings
   { path: '/faqs', route: FaqRoutes },

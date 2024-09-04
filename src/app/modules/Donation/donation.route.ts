@@ -20,7 +20,7 @@ router
       req.body = JSON.parse(req?.body?.data);
       next();
     },
-    DonationControllers.createDonation,
+    DonationControllers.createDonationPost,
   );
 
 router
@@ -36,11 +36,5 @@ router
     },
     DonationControllers.updateDonationById,
   );
-
-router.post(
-  '/create-payment-intent',
-  validateAuth(USER_ROLE.user),
-  DonationControllers.createPaymentIntent,
-);
 
 export const DonationRoutes = router;
