@@ -11,7 +11,7 @@ router
   .get(CategoryControllers.getCategories)
 
   .post(
-    validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+    validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
     CategoryControllers.createCategory,
   );
 
@@ -19,12 +19,12 @@ router
   .route('/:id')
 
   .patch(
-    validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+    validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
     CategoryControllers.updateCategoryById,
   )
 
   .delete(
-    validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+    validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
     CategoryControllers.deleteCategoryById,
   );
 

@@ -12,7 +12,7 @@ router
   .get(BookControllers.getBooks)
 
   .post(
-    validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+    validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
     upload.fields([
       { name: 'coverImage', maxCount: 1 },
       { name: 'pdf', maxCount: 1 },
@@ -27,7 +27,7 @@ router
   .get(BookControllers.getBookById)
 
   .patch(
-    validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+    validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
     upload.fields([
       { name: 'coverImage', maxCount: 1 },
       { name: 'pdf', maxCount: 1 },
@@ -36,7 +36,7 @@ router
   )
 
   .delete(
-    validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+    validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
     BookControllers.deleteBookById,
   );
 

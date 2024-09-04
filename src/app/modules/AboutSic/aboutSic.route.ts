@@ -13,14 +13,14 @@ router
 
   // POST request to create a new about sic entry
   .post(
-    validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+    validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
     AboutSicControllers.getAboutSic,
   );
 
 // PATCH request to update an existing about sic entry by its ID
 router.patch(
   '/:id',
-  validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+  validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
   AboutSicControllers.updateAboutSicById,
 );
 

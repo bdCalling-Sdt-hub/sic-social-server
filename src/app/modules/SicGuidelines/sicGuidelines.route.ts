@@ -13,14 +13,14 @@ router
 
   // POST request to create a new sic guidelines entry
   .post(
-    validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+    validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
     SicGuidelinesControllers.getSicGuidelines,
   );
 
 // PATCH request to update an existing sic guidelines entry by its ID
 router.patch(
   '/:id',
-  validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+  validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
   SicGuidelinesControllers.updateSicGuidelinesById,
 );
 

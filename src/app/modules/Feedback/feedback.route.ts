@@ -10,7 +10,7 @@ router
   .route('/')
 
   .get(
-    validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+    validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
     FeedbackControllers.getAllFeedbacks,
   )
 

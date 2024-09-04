@@ -10,19 +10,19 @@ router
 
   // GET request to fetch all "Payment" entries
   .get(
-    validateAuth(USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+    validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
     PaymentControllers.getPayments,
   )
 
   // POST request to create a new "Payment" entry
   .post(
-    validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+    validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
     PaymentControllers.savePaymentInfo,
   );
 
 router.post(
   '/payment-intent/create',
-  validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.SUPERADMIN),
+  validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
   PaymentControllers.createPaymentIntent,
 );
 
