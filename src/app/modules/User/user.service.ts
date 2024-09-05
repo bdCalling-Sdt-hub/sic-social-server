@@ -5,11 +5,7 @@ import { IUser } from './user.interface';
 import ApiError from '../../errors/ApiError';
 import { User } from './user.model';
 import QueryBuilder from '../../builder/QueryBuilder';
-import {
-  monthNames,
-  userFieldsToExclude,
-  UserSearchableFields,
-} from './user.constant';
+import { userFieldsToExclude, UserSearchableFields } from './user.constant';
 import { JwtPayload } from 'jsonwebtoken';
 import path from 'path';
 import ejs from 'ejs';
@@ -150,41 +146,6 @@ const getUsersCountFromDB = async () => {
   return { totalUser, currentMonthTotal };
 };
 
-const getUserCountsByYearFromDB = async (year: number) => {
-  const monthlyUserCounts = [];
-
-  for (let month = 1; month <= 12; month++) {
-    // Define the start and end dates for the current month
-    const startDate = startOfMonth(new Date(year, month - 1, 1));
-    const endDate = endOfMonth(new Date(year, month - 1, 1));
-
-    // Aggregate user counts for the specified month
-    const userCounts = await User.aggregate([
-      {
-        $match: {
-          createdAt: { $gte: startDate, $lte: endDate },
-          role: 'user',
-          isVerified: true,
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          count: { $sum: 1 },
-        },
-      },
-    ]);
-
-    // Add the result to monthly User Counts
-    monthlyUserCounts.push({
-      month: monthNames[month - 1],
-      totalUsers: userCounts?.length > 0 ? userCounts[0]?.count : 0,
-    });
-  }
-
-  return monthlyUserCounts;
-};
-
 const getUserProfileFromDB = async (user: JwtPayload) => {
   const options = { includeRole: true };
   const result = await User.findById(user?.userId);
@@ -277,7 +238,6 @@ export const UserServices = {
   createAdminToDB,
   getUsersFromDB,
   getUsersCountFromDB,
-  getUserCountsByYearFromDB,
   getAdminsFromDB,
   getUserProfileFromDB,
   updateUserProfileToDB,

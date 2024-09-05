@@ -13,6 +13,7 @@ import { PaymentRoutes } from '../modules/Payment/payment.route';
 import { CategoryRoutes } from '../modules/Category/category.route';
 import { BookRoutes } from '../modules/Book/book.route';
 import { FeedbackRoutes } from '../modules/Feedback/feedback.route';
+import { DashboardRoutes } from '../modules/Dashboard/dashboard.route';
 
 const router = Router();
 
@@ -26,6 +27,7 @@ const routes = [
   { path: '/feedbacks', route: FeedbackRoutes },
 
   // dashboard
+  { path: '/dashboard', route: DashboardRoutes },
   { path: '/donations', route: DonationRoutes },
   { path: '/categories', route: CategoryRoutes },
   { path: '/books', route: BookRoutes },

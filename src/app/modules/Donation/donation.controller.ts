@@ -44,36 +44,8 @@ const updateDonationPostById = catchAsync(async (req, res) => {
   });
 });
 
-const getDonerCountsByYear = catchAsync(async (req, res) => {
-  const result = await DonationServices.getDonerCountsByYearFromDB(
-    Number(req?.params?.year),
-  );
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: `Monthly doners counts for ${req?.params?.year} retrieved successfully!`,
-    data: result,
-  });
-});
-
-const getDonationAmountsCountByYear = catchAsync(async (req, res) => {
-  const result = await DonationServices.getDonationAmountsCountByYearFromDB(
-    Number(req?.params?.year),
-  );
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: `Monthly donation amounts for ${req?.params?.year} retrieved successfully!`,
-    data: result,
-  });
-});
-
 export const DonationControllers = {
   createDonationPost,
   getDonations,
   updateDonationPostById,
-  getDonerCountsByYear,
-  getDonationAmountsCountByYear,
 };

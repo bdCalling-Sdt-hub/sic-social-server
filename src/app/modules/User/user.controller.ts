@@ -47,19 +47,6 @@ const getUsersCount = catchAsync(async (req, res) => {
   });
 });
 
-const getUserCountsByYear = catchAsync(async (req, res) => {
-  const result = await UserServices?.getUserCountsByYearFromDB(
-    Number(req?.params?.year),
-  );
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: `Monthly user counts for ${req?.params?.year} retrieved successfully!`,
-    data: result,
-  });
-});
-
 const getAdmins = catchAsync(async (req, res) => {
   const result = await UserServices?.getAdminsFromDB(req?.query);
 
@@ -102,7 +89,6 @@ export const UserControllers = {
   createAdmin,
   getUsers,
   getUsersCount,
-  getUserCountsByYear,
   getAdmins,
   getUserProfile,
   updateUserProfile,

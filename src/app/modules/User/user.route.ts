@@ -27,7 +27,6 @@ router.get(
 );
 
 router.get('/user-count', UserControllers.getUsersCount);
-router.get('/user-count/:year', UserControllers.getUserCountsByYear);
 
 router.post(
   '/create-user',
