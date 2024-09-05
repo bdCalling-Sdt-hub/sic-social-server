@@ -34,7 +34,7 @@ router
       req.body = JSON.parse(req?.body?.data);
       next();
     },
-    DonationControllers.updateDonationById,
+    DonationControllers.updateDonationPostById,
   );
 
 export const DonationRoutes = router;

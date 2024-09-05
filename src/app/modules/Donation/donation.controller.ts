@@ -29,8 +29,8 @@ const getDonations = catchAsync(async (req, res) => {
   });
 });
 
-const updateDonationById = catchAsync(async (req, res) => {
-  const result = await DonationServices.updateDonationByIdFromDB(
+const updateDonationPostById = catchAsync(async (req, res) => {
+  const result = await DonationServices.updateDonationPostByIdFromDB(
     req?.params?.id,
     req?.body,
     req?.file,
@@ -39,7 +39,7 @@ const updateDonationById = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Donation updated successfully!',
+    message: 'Donation post updated successfully!',
     data: result,
   });
 });
@@ -47,5 +47,5 @@ const updateDonationById = catchAsync(async (req, res) => {
 export const DonationControllers = {
   createDonationPost,
   getDonations,
-  updateDonationById,
+  updateDonationPostById,
 };

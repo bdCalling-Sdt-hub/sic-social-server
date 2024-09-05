@@ -6,4 +6,5 @@ export interface IBook {
   publisher: string;
   coverImage: string;
   bookPdf: string;
+  bookUrl?: string;
 }

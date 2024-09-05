@@ -40,7 +40,7 @@ const getDonationsFromDB = async () => {
   return result;
 };
 
-const updateDonationByIdFromDB = async (
+const updateDonationPostByIdFromDB = async (
   donationId: string,
   payload: Partial<IDonation>,
   file: any,
@@ -81,5 +81,5 @@ const updateDonationByIdFromDB = async (
 export const DonationServices = {
   createDonationPostToDB,
   getDonationsFromDB,
-  updateDonationByIdFromDB,
+  updateDonationPostByIdFromDB,
 };

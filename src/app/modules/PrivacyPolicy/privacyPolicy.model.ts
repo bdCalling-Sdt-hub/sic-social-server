@@ -12,9 +12,6 @@ const privacyPolicySchema = new Schema<IPrivacyPolicy>(
       type: String,
       required: true,
     },
-    lastUpdated: {
-      type: Date,
-    },
   },
   { timestamps: true }, // Automatically adds createdAt and updatedAt timestamps to the schema
 );
