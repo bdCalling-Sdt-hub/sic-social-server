@@ -150,7 +150,7 @@ const getUsersCountFromDB = async () => {
   return { totalUser, currentMonthTotal };
 };
 
-const getUserCountByYearFromDB = async (year: number) => {
+const getUserCountsByYearFromDB = async (year: number) => {
   const monthlyUserCounts = [];
 
   for (let month = 1; month <= 12; month++) {
@@ -159,7 +159,7 @@ const getUserCountByYearFromDB = async (year: number) => {
     const endDate = endOfMonth(new Date(year, month - 1, 1));
 
     // Aggregate user counts for the specified month
-    const userCount = await User.aggregate([
+    const userCounts = await User.aggregate([
       {
         $match: {
           createdAt: { $gte: startDate, $lte: endDate },
@@ -178,7 +178,7 @@ const getUserCountByYearFromDB = async (year: number) => {
     // Add the result to monthly User Counts
     monthlyUserCounts.push({
       month: monthNames[month - 1],
-      totalUser: userCount?.length > 0 ? userCount[0].count : 0,
+      totalUsers: userCounts?.length > 0 ? userCounts[0]?.count : 0,
     });
   }
 
@@ -277,7 +277,7 @@ export const UserServices = {
   createAdminToDB,
   getUsersFromDB,
   getUsersCountFromDB,
-  getUserCountByYearFromDB,
+  getUserCountsByYearFromDB,
   getAdminsFromDB,
   getUserProfileFromDB,
   updateUserProfileToDB,

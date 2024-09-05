@@ -37,4 +37,16 @@ router
     DonationControllers.updateDonationPostById,
   );
 
+router.get(
+  '/doners-count/:year',
+  validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
+  DonationControllers.getDonerCountsByYear,
+);
+
+router.get(
+  '/donation-amount/:year',
+  validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
+  DonationControllers.getDonationAmountsCountByYear,
+);
+
 export const DonationRoutes = router;

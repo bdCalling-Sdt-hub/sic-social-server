@@ -47,8 +47,8 @@ const getUsersCount = catchAsync(async (req, res) => {
   });
 });
 
-const getUserCountByYear = catchAsync(async (req, res) => {
-  const result = await UserServices?.getUserCountByYearFromDB(
+const getUserCountsByYear = catchAsync(async (req, res) => {
+  const result = await UserServices?.getUserCountsByYearFromDB(
     Number(req?.params?.year),
   );
 
@@ -102,7 +102,7 @@ export const UserControllers = {
   createAdmin,
   getUsers,
   getUsersCount,
-  getUserCountByYear,
+  getUserCountsByYear,
   getAdmins,
   getUserProfile,
   updateUserProfile,

@@ -7,6 +7,9 @@ import ApiError from '../../errors/ApiError';
 import httpStatus from 'http-status';
 import { unlinkFile } from '../../helpers/fileHandler';
 import getPathAfterUploads from '../../helpers/getPathAfterUploads';
+import { endOfMonth, startOfMonth } from 'date-fns';
+import { Payment } from '../Payment/payment.model';
+import { monthNames } from '../User/user.constant';
 
 const createDonationPostToDB = async (
   user: JwtPayload,
@@ -78,8 +81,77 @@ const updateDonationPostByIdFromDB = async (
   return result;
 };
 
+const getDonerCountsByYearFromDB = async (year: number) => {
+  const monthlyDonerCounts = [];
+
+  for (let month = 1; month <= 12; month++) {
+    // Define the start and end dates for the current month
+    const startDate = startOfMonth(new Date(year, month - 1, 1));
+    const endDate = endOfMonth(new Date(year, month - 1, 1));
+
+    // Aggregate user counts for the specified month
+    const donerCounts = await Payment.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate, $lte: endDate },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Add the result to monthly User Counts
+    monthlyDonerCounts?.push({
+      month: monthNames[month - 1],
+      totalDoners: donerCounts?.length > 0 ? donerCounts[0]?.count : 0,
+    });
+  }
+
+  return monthlyDonerCounts;
+};
+
+const getDonationAmountsCountByYearFromDB = async (year: number) => {
+  const monthlyDonationAmounts = [];
+
+  for (let month = 1; month <= 12; month++) {
+    // Define the start and end dates for the current month
+    const startDate = startOfMonth(new Date(year, month - 1, 1));
+    const endDate = endOfMonth(new Date(year, month - 1, 1));
+
+    // Aggregate user counts for the specified month
+    const donationAmountsCount = await Payment.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate, $lte: endDate },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          count: { $sum: '$amount' },
+        },
+      },
+    ]);
+
+    // Add the result to monthly User Counts
+    monthlyDonationAmounts?.push({
+      month: monthNames[month - 1],
+      totalAmount:
+        donationAmountsCount?.length > 0 ? donationAmountsCount[0]?.count : 0,
+    });
+  }
+
+  return monthlyDonationAmounts;
+};
+
 export const DonationServices = {
   createDonationPostToDB,
   getDonationsFromDB,
   updateDonationPostByIdFromDB,
+  getDonerCountsByYearFromDB,
+  getDonationAmountsCountByYearFromDB,
 };
