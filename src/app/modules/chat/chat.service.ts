@@ -12,7 +12,7 @@ const createChatToDB = async (payload: any) => {
     return isExistChat;
   }
 
-  const conversation = await Chat.create({ participants, type, facedown });
+  const conversation:any = await Chat.create({ participants, type, facedown });
   return conversation;
 };
 
@@ -71,8 +71,25 @@ const publicChatListFromDB = async () => {
   return filters;
 };
 
+// update chat participants member;
+const addMemberToDB = async (id: string, payload:any) => {
+
+  const chat = await Chat.findOne({
+    _id: id,
+    participants: payload
+  });
+
+  if(!chat){
+    await Chat.findByIdAndUpdate(id, { $addToSet: { participants: payload } }, { new: true });
+    return;
+  }
+  
+  return;
+};
+
 export const ChatService = {
   createChatToDB,
   chatListFromDB,
-  publicChatListFromDB
+  publicChatListFromDB,
+  addMemberToDB
 };

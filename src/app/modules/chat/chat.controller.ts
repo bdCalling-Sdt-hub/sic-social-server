@@ -17,7 +17,7 @@ const createChat = catchAsync(async (req: Request, res: Response) => {
     facedown
   }
 
-  const result = await ChatService.createChatToDB(data);
+  const result:any = await ChatService.createChatToDB(data);
 
   sendResponse(res, {
     success: true,
@@ -50,8 +50,26 @@ const publicChatList = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const addMember = catchAsync(async (req: Request, res: Response) => {
+
+  const id = req.params.id;
+  const payload = req.body.participants;
+  await ChatService.addMemberToDB(id, payload);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Added member to the public chat'
+  });
+
+});
+
+
+
+
 export const ChatController = {
   createChat,
   chatListFromDB,
-  publicChatList
+  publicChatList,
+  addMember
 };

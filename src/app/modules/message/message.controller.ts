@@ -10,19 +10,26 @@ const sendMessage = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
   const data = req.body;
 
+  const { path, image } = req.body;
+
   const messageData:any = {
     chatId: data.chatId,
     sender: user?.userId,
   };
 
+  if(path && image){
+    messageData.image = image;
+    messageData.messageType = "book";
+  }
+
   if (req.files && 'image' in req.files && req.files.image[0]) {
-    messageData.message = `/images/${req.files.image[0].filename}`;
+    messageData.image = `/images/${req.files.image[0].filename}`;
     messageData.messageType = fileType(req.files.image[0].mimetype);
   }
 
  
   if (req.files && 'audio' in req.files && req.files.audio[0]) {
-    messageData.message = `/audios/${req.files.audio[0].filename}`;
+    messageData.audio = `/audios/${req.files.audio[0].filename}`;
     messageData.messageType = fileType(req.files.audio[0].mimetype);
   }
 
