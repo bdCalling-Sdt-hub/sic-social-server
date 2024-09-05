@@ -87,8 +87,10 @@ const cancelFriendRequestToDB = async (
 ) => {
   // Find and delete the friend request where the current user is the sender
   const friendRequest = await Friend.findOneAndDelete({
-    senderId: user?.userId, // The sender of the request
-    recipientId: payload?.recipientId, // The recipient of the request
+    $or: [
+      { senderId: user?.userId, recipientId: payload?.recipientId },
+      { senderId: payload?.recipientId, recipientId: user?.userId },
+    ],
     status: 'pending', // Ensure the request is still pending
   });
 
@@ -100,15 +102,17 @@ const cancelFriendRequestToDB = async (
   }
 };
 
-const removeFriendRequestToDB = async (
+const removeFriendFromDB = async (
   user: JwtPayload,
-  payload: { senderId: string },
+  payload: { recipientId: string },
 ) => {
   // Find and delete the friend request where the current user is the sender
   const friendRequest = await Friend.findOneAndDelete({
-    recipientId: user?.userId, // The sender of the request
-    senderId: payload?.senderId, // The recipient of the request
-    status: 'pending', // Ensure the request is still pending
+    $or: [
+      { senderId: user?.userId, recipientId: payload?.recipientId },
+      { senderId: payload?.recipientId, recipientId: user?.userId },
+    ],
+    status: 'approved', // Ensure the request is still pending
   });
 
   if (!friendRequest) {
@@ -157,7 +161,9 @@ const getAllSentFriendRequestsFromDB = async (user: JwtPayload) => {
 
   const userIds = sentRequests?.map((request) => request?.recipientId);
 
-  return await User.find({ _id: { $in: userIds } }).select('fullName avatar');
+  return await User.find({ _id: { $in: userIds } }).select(
+    'fullName avatar bio',
+  );
 };
 
 const getAllReceivedFriendRequestsFromDB = async (user: JwtPayload) => {
@@ -168,7 +174,19 @@ const getAllReceivedFriendRequestsFromDB = async (user: JwtPayload) => {
 
   const userIds = receivedRequests?.map((request) => request?.senderId);
 
-  return await User.find({ _id: { $in: userIds } }).select('fullName avatar');
+  const existingFriends = await User.find({ _id: { $in: userIds } }).select(
+    'fullName avatar',
+  );
+
+  // Fetch total friend count for each user in parallel
+  const usersWithFriendCount = await Promise.all(
+    existingFriends?.map(async (user) => ({
+      ...user?.toObject(),
+      totalFriends: await Friend.getTotalFriendsCount(user?._id?.toString()),
+    })),
+  );
+
+  return usersWithFriendCount;
 };
 
 const getFriendsListFromDB = async (user: JwtPayload) => {
@@ -200,7 +218,7 @@ export const FriendServices = {
   getFriendSuggestionsFromDB,
   sendFriendRequestToDB,
   cancelFriendRequestToDB,
-  removeFriendRequestToDB,
+  removeFriendFromDB,
   acceptFriendRequestToDB,
   getAllSentFriendRequestsFromDB,
   getAllReceivedFriendRequestsFromDB,

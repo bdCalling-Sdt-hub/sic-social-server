@@ -37,6 +37,9 @@ const updatePrivacyPolicyByIdFromDB = async (
   privacyPolicyId: string,
   payload: Partial<IPrivacyPolicy>,
 ) => {
+  // Prevent modification of the createdBy field to maintain integrity
+  delete payload.createdBy;
+
   // Fetch the existing privacy policy entry from the database by its ID
   const existingPrivacyPolicy = await PrivacyPolicy.findById(privacyPolicyId);
 
@@ -47,10 +50,6 @@ const updatePrivacyPolicyByIdFromDB = async (
       `Privacy Policy with ID: ${privacyPolicyId} not found!`,
     );
   }
-
-  // Prevent modification of the createdBy field to maintain integrity
-  delete payload.createdBy;
-  payload.lastUpdated = new Date();
 
   // Update the Privacy Policy entry in the database with the new data
   const result = await PrivacyPolicy.findByIdAndUpdate(

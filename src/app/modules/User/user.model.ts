@@ -54,11 +54,9 @@ const userSchema = new Schema<IUser, UserModel>(
       type: String,
       trim: true,
     },
-    interests: [
-      {
-        type: String,
-      },
-    ],
+    interests: {
+      type: [String],
+    },
     isPrivateProfile: {
       type: Boolean,
       default: false, // Default value for new users
@@ -74,7 +72,7 @@ const userSchema = new Schema<IUser, UserModel>(
     role: {
       type: String,
       enum: Object.values(USER_ROLE),
-      default: 'user',
+      default: 'USER',
     },
     status: {
       type: String,
@@ -106,6 +104,13 @@ userSchema.pre('save', async function (next) {
     this.password,
     Number(config.bcryptSaltRounds),
   );
+
+  // Remove interests field if the role is admin or superadmin
+  if (this.role === USER_ROLE['SUPER-ADMIN'] || this.role === USER_ROLE.ADMIN) {
+    this.set('interests', undefined, { strict: false }); // Remove interests
+    this.set('isPrivateProfile', undefined, { strict: false }); // Remove isPrivateProfile
+  }
+
   next();
 });
 

@@ -7,7 +7,7 @@ const router = express.Router()
 
 router.post(
   '/send-message',
-  validateAuth(USER_ROLE?.user),
+  validateAuth(USER_ROLE?.USER),
   upload.fields([
     {
       name: "image", maxCount:1
@@ -20,7 +20,7 @@ router.post(
 )
 
 router.get(
-  '/chatId/:chatId', validateAuth(USER_ROLE?.user), MessageController.getMessages,
+  '/chatId/:chatId', validateAuth(USER_ROLE?.USER), MessageController.getMessages,
 )
 
 export const MessageRoutes = router

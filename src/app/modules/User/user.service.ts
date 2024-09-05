@@ -5,11 +5,7 @@ import { IUser } from './user.interface';
 import ApiError from '../../errors/ApiError';
 import { User } from './user.model';
 import QueryBuilder from '../../builder/QueryBuilder';
-import {
-  monthNames,
-  userFieldsToExclude,
-  UserSearchableFields,
-} from './user.constant';
+import { userFieldsToExclude, UserSearchableFields } from './user.constant';
 import { JwtPayload } from 'jsonwebtoken';
 import path from 'path';
 import ejs from 'ejs';
@@ -31,9 +27,8 @@ const createUserToDB = async (payload: IUser) => {
   }
 
   // Set default values for new users
-  payload.role = 'user';
+  payload.role = 'USER';
   payload.status = 'in-progress';
-  payload.isBlocked = false;
 
   // Generate OTP and set expiration for email verification
   const otp = generateOtp();
@@ -82,10 +77,9 @@ const createAdminToDB = async (payload: IUser) => {
   }
 
   // Set default values for new admins
-  payload.role = 'admin';
+  payload.role = 'ADMIN';
   payload.status = 'active';
   payload.isVerified = true;
-  payload.isBlocked = false;
 
   // Create the new admin in the database
   await User.create(payload);
@@ -150,41 +144,6 @@ const getUsersCountFromDB = async () => {
   });
 
   return { totalUser, currentMonthTotal };
-};
-
-const getUserCountByYearFromDB = async (year: number) => {
-  const monthlyUserCounts = [];
-
-  for (let month = 1; month <= 12; month++) {
-    // Define the start and end dates for the current month
-    const startDate = startOfMonth(new Date(year, month - 1, 1));
-    const endDate = endOfMonth(new Date(year, month - 1, 1));
-
-    // Aggregate user counts for the specified month
-    const userCount = await User.aggregate([
-      {
-        $match: {
-          createdAt: { $gte: startDate, $lte: endDate },
-          role: 'user',
-          isVerified: true,
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          count: { $sum: 1 },
-        },
-      },
-    ]);
-
-    // Add the result to monthly User Counts
-    monthlyUserCounts.push({
-      month: monthNames[month - 1],
-      totalUser: userCount?.length > 0 ? userCount[0].count : 0,
-    });
-  }
-
-  return monthlyUserCounts;
 };
 
 const getUserProfileFromDB = async (user: JwtPayload) => {
@@ -279,7 +238,6 @@ export const UserServices = {
   createAdminToDB,
   getUsersFromDB,
   getUsersCountFromDB,
-  getUserCountByYearFromDB,
   getAdminsFromDB,
   getUserProfileFromDB,
   updateUserProfileToDB,
