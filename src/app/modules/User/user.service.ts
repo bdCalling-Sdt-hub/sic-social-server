@@ -89,7 +89,7 @@ const getUsersFromDB = async (query: Record<string, unknown>) => {
   // Build the query using QueryBuilder with the given query parameters
   const usersQuery = new QueryBuilder(
     User.find({
-      role: 'user',
+      role: 'USER',
       isVerified: true,
     }).select('avatar fullName email presentAddress permanentAddress'),
     query,
@@ -109,7 +109,7 @@ const getUsersFromDB = async (query: Record<string, unknown>) => {
 const getAdminsFromDB = async (query: Record<string, unknown>) => {
   // Build the query using QueryBuilder with the given query parameters
   const usersQuery = new QueryBuilder(
-    User.find({ role: 'admin' }).select('avatar fullName email'),
+    User.find({ role: 'ADMIN' }).select('avatar fullName email'),
     query,
   )
     .sort() // Apply sorting based on the query parameter
@@ -125,7 +125,7 @@ const getAdminsFromDB = async (query: Record<string, unknown>) => {
 
 const getUsersCountFromDB = async () => {
   const totalUser = await User.countDocuments({
-    role: 'user',
+    role: 'USER',
     isVerified: true,
   });
 
@@ -135,7 +135,7 @@ const getUsersCountFromDB = async () => {
 
   // Count users created in the current month
   const currentMonthTotal = await User.countDocuments({
-    role: 'user',
+    role: 'USER',
     isVerified: true,
     createdAt: {
       $gte: start,

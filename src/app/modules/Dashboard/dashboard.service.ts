@@ -10,12 +10,12 @@ const getDashboardMetricsFromDB = async () => {
 
   // Get total users
   const totalUser = await User.countDocuments({
-    role: 'user',
+    role: 'USER',
     isVerified: true,
   });
 
   const todayUser = await User.countDocuments({
-    role: 'user',
+    role: 'USER',
     isVerified: true,
     createdAt: { $gte: todayStart, $lte: todayEnd },
   });
@@ -78,7 +78,7 @@ const getUserCountsByYearFromDB = async (year: number) => {
       {
         $match: {
           createdAt: { $gte: startDate, $lte: endDate },
-          role: 'user',
+          role: 'USER',
           isVerified: true,
         },
       },
