@@ -12,6 +12,11 @@ const bookSchema = new Schema<IBook>(
       type: String,
       required: true,
     },
+    category: {
+      type: Schema.Types.ObjectId, // MongoDB ObjectId type
+      ref: 'Category', // Reference to the 'User' model
+      required: true,
+    },
     publisher: {
       type: String,
       required: true,

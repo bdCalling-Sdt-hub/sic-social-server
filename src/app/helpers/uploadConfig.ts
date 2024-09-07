@@ -5,13 +5,9 @@ import httpStatus from 'http-status';
 import createDirectory from './createDirectory';
 import { FIELD_NAME_TO_FORMATS } from '../constants/file.constant';
 import getUploadFolder from './getUploadFolder';
-import { unlinkFiles } from './fileHandler';
 
 // Base directory for uploads
 const baseUploadDirectory = path.join(process.cwd(), 'uploads');
-
-// Track uploaded files for cleanup
-const uploadedFiles: string[] = [];
 
 // Multer storage configuration
 const storage = multer.diskStorage({
@@ -38,12 +34,6 @@ const storage = multer.diskStorage({
     const fileName =
       file.fieldname + '-' + uniqueSuffix + path.extname(file?.originalname);
 
-    const filePath = path.join(
-      baseUploadDirectory,
-      getUploadFolder(file?.fieldname) as string,
-      fileName,
-    );
-    uploadedFiles.push(filePath); // Track file for potential cleanup
     cb(null, fileName);
   },
 });
@@ -59,12 +49,9 @@ const upload = multer({
     const supportedFormats = FIELD_NAME_TO_FORMATS[fieldname];
 
     if (supportedFormats) {
-      if (supportedFormats?.includes(mimetype)) {
-        uploadedFiles.length = 0; // Clear the list for next batch
-        return cb(null, true);
+      if (supportedFormats.includes(mimetype)) {
+        return cb(null, true); // Accept the file
       } else {
-        unlinkFiles(uploadedFiles);
-        uploadedFiles.length = 0; // Remove all uploaded files if error
         return cb(
           new ApiError(
             httpStatus.NOT_ACCEPTABLE,
@@ -73,8 +60,6 @@ const upload = multer({
         );
       }
     } else {
-      unlinkFiles(uploadedFiles);
-      uploadedFiles.length = 0; // Remove all uploaded files if error
       return cb(
         new ApiError(
           httpStatus.NOT_ACCEPTABLE,

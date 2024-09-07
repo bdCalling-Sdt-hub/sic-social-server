@@ -15,7 +15,7 @@ router
     validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
     upload.fields([
       { name: 'coverImage', maxCount: 1 },
-      { name: 'pdf', maxCount: 1 },
+      { name: 'bookPdf', maxCount: 1 },
     ]),
 
     BookControllers.createBook,
@@ -30,8 +30,9 @@ router
     validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
     upload.fields([
       { name: 'coverImage', maxCount: 1 },
-      { name: 'pdf', maxCount: 1 },
+      { name: 'bookPdf', maxCount: 1 },
     ]),
+
     BookControllers.updateBookById,
   )
 
