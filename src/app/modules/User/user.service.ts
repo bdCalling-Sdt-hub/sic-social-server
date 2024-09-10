@@ -91,7 +91,7 @@ const getUsersFromDB = async (query: Record<string, unknown>) => {
     User.find({
       role: 'USER',
       isVerified: true,
-    }).select('avatar fullName email presentAddress permanentAddress'),
+    }).select('avatar fullName email phoneNumber status'),
     query,
   )
     .search(UserSearchableFields) // Apply search conditions based on searchable fields
@@ -109,7 +109,7 @@ const getUsersFromDB = async (query: Record<string, unknown>) => {
 const getAdminsFromDB = async (query: Record<string, unknown>) => {
   // Build the query using QueryBuilder with the given query parameters
   const usersQuery = new QueryBuilder(
-    User.find({ role: 'ADMIN' }).select('avatar fullName email'),
+    User.find({ role: 'ADMIN' }).select('avatar fullName email status'),
     query,
   )
     .sort() // Apply sorting based on the query parameter
@@ -205,6 +205,53 @@ const updateUserProfileToDB = async (
   return result;
 };
 
+const updateUserStatusToDB = async (
+  userId: string,
+  payload: { status: 'block' | 'unblock' },
+) => {
+  // Check if the provided status is valid
+  const validStatusTypes = new Set(['block', 'unblock']);
+
+  if (!payload?.status || !validStatusTypes?.has(payload?.status)) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Invalid or missing status provided!',
+    );
+  }
+
+  // Fetch the user to check the role before updating
+  const existingUser = await User.findById(userId);
+
+  if (!existingUser) {
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      `User with ID: ${userId} not found!`,
+    );
+  }
+
+  // Check if the user is a superAdmin
+  if (existingUser?.role === 'SUPER-ADMIN') {
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      `Cannot update status for user with role 'superAdmin'.`,
+    );
+  }
+
+  // Update user status
+  if (payload?.status === 'block') {
+    existingUser.status = 'blocked';
+    existingUser.isBlocked = true;
+  } else if (payload?.status === 'unblock') {
+    existingUser.status = 'active';
+    existingUser.isBlocked = false;
+  }
+
+  // Save the updated user
+  await existingUser.save();
+
+  return existingUser;
+};
+
 // Schedule a cron job to delete expired, unverified users every 12 hours
 cron.schedule('0 */12 * * *', async () => {
   const now = new Date();
@@ -241,4 +288,5 @@ export const UserServices = {
   getAdminsFromDB,
   getUserProfileFromDB,
   updateUserProfileToDB,
+  updateUserStatusToDB,
 };

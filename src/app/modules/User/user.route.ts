@@ -52,4 +52,10 @@ router.patch(
   UserControllers.updateUserProfile,
 );
 
+router.patch(
+  '/update-status/:id',
+  validateAuth(USER_ROLE['SUPER-ADMIN']),
+  UserControllers.updateUserStatus,
+);
+
 export const UserRoutes = router;

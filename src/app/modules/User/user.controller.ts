@@ -84,6 +84,30 @@ const updateUserProfile = catchAsync(async (req, res) => {
   });
 });
 
+const updateUserStatus = catchAsync(async (req, res) => {
+  const result = await UserServices.updateUserStatusToDB(
+    req?.params?.id,
+    req?.body,
+  );
+
+  // Determine the appropriate message based on the user's status
+  const statusMessage =
+    req?.body?.action === 'block'
+      ? result.role === 'ADMIN'
+        ? 'Admin user has been blocked successfully!'
+        : 'User has been blocked successfully!'
+      : result.role === 'ADMIN'
+        ? 'Admin user has been unblocked successfully!'
+        : 'User has been unblocked successfully!';
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: statusMessage,
+    data: null,
+  });
+});
+
 export const UserControllers = {
   createUser,
   createAdmin,
@@ -92,4 +116,5 @@ export const UserControllers = {
   getAdmins,
   getUserProfile,
   updateUserProfile,
+  updateUserStatus,
 };
