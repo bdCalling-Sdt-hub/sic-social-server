@@ -24,7 +24,9 @@ const getMessagesFromDB = async (chatId: string) => {
   .populate(
     {path: "sender", select: "fullName avatar"}
   );
+ 
   return result;
+
 }
 
 export const MessageService = {

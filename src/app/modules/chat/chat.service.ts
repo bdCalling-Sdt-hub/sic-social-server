@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { JwtPayload } from 'jsonwebtoken';
-import { Chat } from './chat.model';
 import { Message } from '../message/message.model';
+import { Chat } from './chat.model';
 
 const createChatToDB = async (payload: any) => {
   const { participants, type, facedown } = payload;
@@ -59,9 +60,9 @@ const publicChatListFromDB = async () => {
 
     const data:any = conversation?.toObject();
     const lastMessage:any = await Message.findOne({ chatId: conversation?._id })
-    .populate({path: "sender", select: "fullName"})
+    .populate({path: "sender", select: "fullName"}) 
     .sort({ createdAt: -1 })
-    .select("message createdAt")
+    .select("message createdAt audio image text path")
     return {
       ...data,
       lastMessage: lastMessage || {}

@@ -21,7 +21,7 @@ const sendMessage = catchAsync(async (req: Request, res: Response) => {
   };
 
   if(path){
-    messageData.image = path;
+    messageData.path = path;
     messageData.messageType = "book";
   }
 
