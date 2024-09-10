@@ -4,7 +4,7 @@ import express, { Request, Response } from 'express';
 import router from './app/routes';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import notFound from './app/middlewares/notFound';
-import requestLogger from './app/middlewares/requestLogger';
+import requestLogger from './app/logger/requestLogger';
 
 const app = express();
 
