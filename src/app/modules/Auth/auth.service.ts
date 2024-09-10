@@ -1,20 +1,22 @@
-import httpStatus from 'http-status';
-import ApiError from '../../errors/ApiError';
-import bcrypt from 'bcrypt';
-import config from '../../config';
-import { User } from '../User/user.model';
 import { createJwtToken, verifyJwtToken } from '../../helpers/tokenUtils';
+
+import bcrypt from 'bcrypt';
+import ejs from 'ejs';
+import httpStatus from 'http-status';
 import { JwtPayload } from 'jsonwebtoken';
 import path from 'path';
+import config from '../../config';
+import ApiError from '../../errors/ApiError';
 import { sendEmail } from '../../helpers/emailService';
-import ejs from 'ejs';
 import generateOtp from '../../helpers/generateOtp';
+import { User } from '../User/user.model';
 
 const verifyOtpToDB = async (payload: {
   email: string;
   otp: number;
   verificationType: 'emailVerification' | 'passwordReset';
 }) => {
+
   // Check if the provided verificationType is valid
   const validVerificationTypes = new Set([
     'emailVerification',
@@ -50,6 +52,22 @@ const verifyOtpToDB = async (payload: {
 
     // Verify the OTP for email verification
     await User.verifyOtp(payload.email, payload.otp);
+    const jwtPayload = {
+      userId: existingUser._id,
+      email: existingUser.email,
+      role: existingUser.role,
+    };
+
+    // Generate a JWT access token for the authenticated user
+    const accessToken = createJwtToken(
+      jwtPayload,
+      config.jwtAccessSecret as string,
+      '5m',
+    );
+
+    return {
+      accessToken,
+    };
   } else if (payload?.verificationType === 'passwordReset') {
     if (!existingUser.isVerified) {
       throw new ApiError(httpStatus.FORBIDDEN, 'User account is not verified!');

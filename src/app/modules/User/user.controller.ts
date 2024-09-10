@@ -4,8 +4,9 @@ import sendResponse from '../../utils/sendResponse';
 import { UserServices } from './user.service';
 
 const createUser = catchAsync(async (req, res) => {
+  // console.log(req.body);
   const result = await UserServices.createUserToDB(req?.body);
-
+// console.log(result);
   return sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,

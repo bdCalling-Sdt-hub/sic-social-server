@@ -1,24 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import httpStatus from 'http-status';
-import { IUser } from './user.interface';
-import ApiError from '../../errors/ApiError';
-import { User } from './user.model';
-import QueryBuilder from '../../builder/QueryBuilder';
-import { userFieldsToExclude, UserSearchableFields } from './user.constant';
-import { JwtPayload } from 'jsonwebtoken';
-import path from 'path';
-import ejs from 'ejs';
-import cron from 'node-cron';
-import generateOtp from '../../helpers/generateOtp';
+import { endOfMonth, startOfMonth } from 'date-fns';
 import { errorLogger, logger } from '../../utils/winstonLogger';
+import { UserSearchableFields, userFieldsToExclude } from './user.constant';
+
 import colors from 'colors';
+import ejs from 'ejs';
+import httpStatus from 'http-status';
+import { JwtPayload } from 'jsonwebtoken';
+import cron from 'node-cron';
+import path from 'path';
+import QueryBuilder from '../../builder/QueryBuilder';
+import ApiError from '../../errors/ApiError';
 import { sendEmail } from '../../helpers/emailService';
-import { startOfMonth, endOfMonth } from 'date-fns';
 import { unlinkFile } from '../../helpers/fileHandler';
+import generateOtp from '../../helpers/generateOtp';
+import { IUser } from './user.interface';
+import { User } from './user.model';
 
 const createUserToDB = async (payload: IUser) => {
   // Check if a user with the provided email already exists
+  console.log(payload);
   if (await User.isUserExistsByEmail(payload?.email)) {
     throw new ApiError(
       httpStatus.CONFLICT,
