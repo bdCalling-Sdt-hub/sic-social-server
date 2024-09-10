@@ -237,17 +237,21 @@ const updateUserStatusToDB = async (
     );
   }
 
-  // Update user status
-  if (payload?.status === 'block') {
-    existingUser.status = 'blocked';
-    existingUser.isBlocked = true;
-  } else if (payload?.status === 'unblock') {
-    existingUser.status = 'active';
-    existingUser.isBlocked = false;
+  // Define the status updates based on the payload
+  let statusUpdate: Partial<{ status: string; isBlocked: boolean }>;
+
+  if (payload.status === 'block') {
+    statusUpdate = { status: 'blocked', isBlocked: true };
+  } else {
+    statusUpdate = { status: 'active', isBlocked: false };
   }
 
-  // Save the updated user
-  await existingUser.save();
+  // Use findByIdAndUpdate to directly update the user
+  await User.findByIdAndUpdate(
+    userId,
+    statusUpdate,
+    { new: true }, // Return the updated document
+  );
 
   return existingUser;
 };

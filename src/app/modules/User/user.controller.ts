@@ -92,7 +92,7 @@ const updateUserStatus = catchAsync(async (req, res) => {
 
   // Determine the appropriate message based on the user's status
   const statusMessage =
-    req?.body?.action === 'block'
+    req?.body?.status === 'block'
       ? result.role === 'ADMIN'
         ? 'Admin user has been blocked successfully!'
         : 'User has been blocked successfully!'
