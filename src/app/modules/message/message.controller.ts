@@ -1,24 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Request, Response } from 'express';
-import { MessageService } from './message.service';
-import catchAsync from '../../utils/catchAsync';
-import sendResponse from '../../utils/sendResponse';
+
 import httpStatus from 'http-status';
+import catchAsync from '../../utils/catchAsync';
 import { fileType } from '../../utils/fileType';
+import sendResponse from '../../utils/sendResponse';
+import { MessageService } from './message.service';
 
 const sendMessage = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
   const data = req.body;
 
-  const { path, image } = req.body;
+  const { path } = req.body;
 
   const messageData:any = {
     chatId: data.chatId,
     sender: user?.userId,
+    text : data?.text,
   };
 
-  if(path && image){
-    messageData.image = image;
+  if(path){
+    messageData.image = path;
     messageData.messageType = "book";
   }
 

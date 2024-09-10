@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Message } from './message.model'
+
+import { Message } from './message.model';
 
 const sendMessageToDB = async (payload: any) => {
+
   const result = await Message.create(payload);
 
   /* if(!result){
