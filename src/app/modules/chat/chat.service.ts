@@ -6,12 +6,13 @@ import { Chat } from './chat.model';
 
 const createChatToDB = async (payload: any) => {
   const { participants, type, facedown } = payload;
-  const isExistChat = await Chat.findOne({ participants, facedown, type });
-
-
-  if(isExistChat){
-    return isExistChat;
+  if(facedown){
+    const isExistChat = await Chat.findOne({ participants, facedown, type });
+    if(isExistChat){
+      return isExistChat;
+    }
   }
+ 
 
   const conversation:any = await Chat.create({ participants, type, facedown });
   return conversation;
