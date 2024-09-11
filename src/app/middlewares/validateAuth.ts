@@ -21,7 +21,7 @@ const validateAuth = (...requiredRoles: TUserRole[]) => {
     if (bearerToken && bearerToken.startsWith('Bearer')) {
       const token = bearerToken.split(' ')[1];
 
-      // checking if the given token is valid
+      // checking if the given token is valid and solid response
       let decoded;
       try {
         decoded =  verifyJwtToken(token, config.jwtAccessSecret as string);
@@ -29,6 +29,10 @@ const validateAuth = (...requiredRoles: TUserRole[]) => {
         if(error?.message === "jwt expired"){
           throw new ApiError(httpStatus.UNAUTHORIZED, 'Token is expired!');
         }
+        if(error?.message === "invalid signature"){
+          throw new ApiError(httpStatus.UNAUTHORIZED, 'invalid signature!');
+        }
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'You are not authorized!');
       }
 
       // Check if a user with the provided email exists in the database
