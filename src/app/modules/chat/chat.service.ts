@@ -12,8 +12,6 @@ const createChatToDB = async (payload: any) => {
       return isExistChat;
     }
   }
- 
-
   const conversation:any = await Chat.create({ participants, type, facedown });
   return conversation;
 };
@@ -22,8 +20,9 @@ const chatListFromDB = async (user: JwtPayload) => {
 
   const chat = await Chat.find({
     participants: {
-      $in: user?.userId
-    }
+      $in: user?.userId,
+    },
+    type : "private"
   }).populate({
     path: 'participants',
     select: 'fullName avatar'
