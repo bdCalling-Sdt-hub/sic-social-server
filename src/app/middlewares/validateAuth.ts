@@ -26,7 +26,9 @@ const validateAuth = (...requiredRoles: TUserRole[]) => {
       try {
         decoded =  verifyJwtToken(token, config.jwtAccessSecret as string);
       } catch (error) {
-        throw new ApiError(httpStatus.UNAUTHORIZED, 'Token is expired!');
+        if(error?.message === "jwt expired"){
+          throw new ApiError(httpStatus.UNAUTHORIZED, 'Token is expired!');
+        }
       }
 
       // Check if a user with the provided email exists in the database
