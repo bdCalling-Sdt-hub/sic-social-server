@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
+
 import httpStatus from 'http-status';
 import { JwtPayload } from 'jsonwebtoken';
 import config from '../config';
+import ApiError from '../errors/ApiError';
+import { verifyJwtToken } from '../helpers/tokenUtils';
+import { TUserRole } from '../modules/User/user.interface';
 import { User } from '../modules/User/user.model';
 import catchAsync from '../utils/catchAsync';
-import ApiError from '../errors/ApiError';
-import { TUserRole } from '../modules/User/user.interface';
-import { verifyJwtToken } from '../helpers/tokenUtils';
 
 const validateAuth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -21,7 +22,12 @@ const validateAuth = (...requiredRoles: TUserRole[]) => {
       const token = bearerToken.split(' ')[1];
 
       // checking if the given token is valid
-      const decoded = verifyJwtToken(token, config.jwtAccessSecret as string);
+      let decoded;
+      try {
+        decoded =  verifyJwtToken(token, config.jwtAccessSecret as string);
+      } catch (error) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'Token is expired!');
+      }
 
       // Check if a user with the provided email exists in the database
       const existingUser = await User.findById(decoded?.userId);
