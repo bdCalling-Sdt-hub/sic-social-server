@@ -7,7 +7,7 @@ import { FIELD_NAME_TO_FORMATS } from '../constants/file.constant';
 import getUploadFolder from './getUploadFolder';
 
 // Base directory for uploads
-const baseUploadDirectory = path.join(process.cwd(), 'uploads');
+const baseUploadDirectory = path.join(process.cwd(), 'public');
 
 // Multer storage configuration
 const storage = multer.diskStorage({

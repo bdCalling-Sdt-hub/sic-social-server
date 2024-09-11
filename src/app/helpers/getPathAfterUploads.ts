@@ -6,18 +6,18 @@ const getPathAfterUploads = (fullPath: string) => {
   const normalizedPath = fullPath?.replace(/\\/g, '/');
 
   // Find the index of 'uploads' in the normalized path
-  const uploadsIndex = normalizedPath?.indexOf('uploads');
+  const uploadsIndex = normalizedPath?.indexOf('public');
 
   if (uploadsIndex === -1) {
-    // Throw an error if "uploads" is not found in the path
+    // Throw an error if "public" is not found in the path
     throw new ApiError(
       httpStatus.BAD_REQUEST,
-      "'uploads' directory not found in the provided path.",
+      "'public' directory not found in the provided path.",
     );
   }
 
-  // Add length of 'uploads' + 1 to the index to start after 'uploads/'
-  return normalizedPath?.substring(uploadsIndex + 'uploads'.length + 1);
+  // Add length of 'public' + 1 to the index to start after 'uploads/'
+  return normalizedPath?.substring(uploadsIndex + 'public'.length + 1);
 };
 
 export default getPathAfterUploads;

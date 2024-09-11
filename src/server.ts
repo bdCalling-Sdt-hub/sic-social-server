@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import app from './app';
 import config from './app/config';
 import seedSuperAdmin from './app/DB';
-import { errorLogger, logger } from './app/logger/winstonLogger';
+import logger from './app/logger/winston.logger';
 import colors from 'colors';
 
 let server: Server;
@@ -30,9 +30,7 @@ async function main() {
       );
     });
   } catch (error) {
-    errorLogger.error(
-      colors.bgCyan.bold(`❌ MongoDB connection error: ${error}`),
-    );
+    logger.error(colors.bgCyan.bold(`❌ MongoDB connection error: ${error}`));
     process.exit(1);
   }
 }
@@ -40,7 +38,7 @@ async function main() {
 main();
 
 process.on('unhandledRejection', (error) => {
-  errorLogger.error(
+  logger.error(
     colors.bgYellow.bold(`⚠️ Unhandled rejection, shutting down... ${error}`),
   );
 
@@ -53,7 +51,7 @@ process.on('unhandledRejection', (error) => {
 });
 
 process.on('uncaughtException', (error) => {
-  errorLogger.error(
+  logger.error(
     colors.bgRed.bold(`❌ Uncaught exception: ${error}, shutting down...`),
   );
   process.exit(1);

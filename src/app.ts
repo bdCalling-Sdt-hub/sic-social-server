@@ -4,7 +4,7 @@ import express, { Request, Response } from 'express';
 import router from './app/routes';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import notFound from './app/middlewares/notFound';
-import requestLogger from './app/logger/requestLogger';
+import requestLogger from './app/logger/morgan.logger';
 
 const app = express();
 
@@ -15,11 +15,10 @@ app.use(
     credentials: true,
   }),
 );
-
 app.use(express.json());
 app.use(cookieParser());
 app.use(requestLogger);
-app.use(express.static('uploads'));
+app.use(express.static('public'));
 
 // Default route for the root URL
 app.get('/', (req: Request, res: Response) => {

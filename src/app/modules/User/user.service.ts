@@ -11,11 +11,12 @@ import path from 'path';
 import ejs from 'ejs';
 import cron from 'node-cron';
 import generateOtp from '../../helpers/generateOtp';
-import { errorLogger, logger } from '../../logger/winstonLogger';
+import logger from '../../logger/winston.logger';
 import colors from 'colors';
 import { sendEmail } from '../../helpers/emailService';
 import { startOfMonth, endOfMonth } from 'date-fns';
 import { unlinkFile } from '../../helpers/fileHandler';
+import getPathAfterUploads from '../../helpers/getPathAfterUploads';
 
 const createUserToDB = async (payload: IUser) => {
   // Check if a user with the provided email already exists
@@ -181,16 +182,13 @@ const updateUserProfileToDB = async (
   }
 
   // Handle avatar update if a new avatar is uploaded
-  if (file?.avatar && file?.avatar) {
-    const newAvatarPath = file?.avatar?.path.replace(/\\/g, '/'); // Replace backslashes with forward slashes
-    payload.avatar = newAvatarPath;
+  if (file) {
+    const newAvatarPath = getPathAfterUploads(file?.path); // Replace backslashes with forward slashes
 
     // Delete the old avatar file if it exists and is not the default
-    if (
-      existingUser?.avatar &&
-      existingUser?.avatar !== 'https://i.ibb.co/z5YHLV9/profile.png'
-    ) {
+    if (existingUser?.avatar && existingUser?.avatar !== newAvatarPath) {
       unlinkFile(existingUser?.avatar);
+      payload.avatar = newAvatarPath;
     }
   }
 
@@ -275,12 +273,12 @@ cron.schedule('0 */12 * * *', async () => {
         ),
       );
     } else {
-      logger.info(
+      logger.warn(
         colors.bgYellow('No expired unverified users found for deletion.'),
       );
     }
   } catch (error) {
-    errorLogger.error(colors.bgRed(`Error deleting expired users: ${error}`));
+    logger.error(colors.bgRed(`Error deleting expired users: ${error}`));
   }
 });
 
