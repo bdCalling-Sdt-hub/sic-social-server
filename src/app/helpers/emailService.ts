@@ -1,8 +1,9 @@
+import { errorLogger, logger } from '../utils/winstonLogger';
+
+import colors from 'colors';
 import nodemailer from 'nodemailer';
 import config from '../config';
 import { ISendEmail } from '../interfaces/sendEmail.interface';
-import { errorLogger, logger } from '../utils/winstonLogger';
-import colors from 'colors';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -16,6 +17,8 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendEmail = async (payload: ISendEmail) => {
+  // return;
+  // console.log(payload);
   try {
     const info = await transporter.sendMail({
       from: config.smtpEmailUser,
@@ -32,3 +35,4 @@ const sendEmail = async (payload: ISendEmail) => {
 };
 
 export { sendEmail };
+

@@ -1,12 +1,13 @@
 import httpStatus from 'http-status';
+import config from '../../config';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { AuthServices } from './auth.service';
-import config from '../../config';
 
 const verifyOtp = catchAsync(async (req, res) => {
-  const result = await AuthServices.verifyOtpToDB(req?.body);
 
+  const result = await AuthServices.verifyOtpToDB(req?.body);
+  // console.log(result);
   // Determine the response message based on the requestType
   const message =
     req?.body?.requestType === 'passwordReset'

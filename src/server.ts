@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { errorLogger, logger } from './app/utils/winstonLogger';
+
+import colors from 'colors';
 import mongoose from 'mongoose';
+import { Server } from 'socket.io';
 import app from './app';
 import config from './app/config';
 import seedSuperAdmin from './app/DB';
-import { errorLogger, logger } from './app/utils/winstonLogger';
-import colors from 'colors';
-import { Server } from 'socket.io';
 import { socketHelper } from './app/helpers/socketHelper';
 
 let server:any;
@@ -20,7 +22,7 @@ async function main() {
 
     logger.info(
       colors.bgGreen.bold(
-        `✅ Database Connected! Host: ${connectionInstance?.connection?.host}`,
+        `✅ Database Connected! Host: ${connectionInstance?.connection?.host} ${config.dbURL}/${config.collectionName}`,
       ),
     );
 
