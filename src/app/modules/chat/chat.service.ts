@@ -31,13 +31,16 @@ const chatListFromDB = async (user: JwtPayload) => {
 
   //Use Promise.all to handle the asynchronous operations inside the map
   const filters = await Promise.all(chat?.map(async (conversation) => {
-    const data = conversation?.toObject();
-    const lastMessage:any = await Message.findOne({ chatId: conversation?._id }).sort({ createdAt: -1 }).select("message createdAt")
-      
-      return {
-        ...data,
-        lastMessage: lastMessage?.message || ""
-      };
+
+    const data:any = conversation?.toObject();
+    const lastMessage:any = await Message.findOne({ chatId: conversation?._id })
+    .populate({path: "sender", select: "fullName"}) 
+    .sort({ createdAt: -1 })
+    .select("message createdAt audio image text path")
+    return {
+      ...data,
+      lastMessage: lastMessage || {}
+    };
   }));
   
   return filters;
