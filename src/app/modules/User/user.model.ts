@@ -1,10 +1,11 @@
 import { Schema, model } from 'mongoose';
+import { GENDER, USER_ROLE, USER_STATUS } from './user.constant';
 import { IUser, UserModel } from './user.interface';
+
 import bcrypt from 'bcrypt';
+import httpStatus from 'http-status';
 import config from '../../config';
 import ApiError from '../../errors/ApiError';
-import httpStatus from 'http-status';
-import { GENDER, USER_ROLE, USER_STATUS } from './user.constant';
 
 // Define the schema for the User model
 const userSchema = new Schema<IUser, UserModel>(
@@ -24,7 +25,7 @@ const userSchema = new Schema<IUser, UserModel>(
     },
     avatar: {
       type: String,
-      default: 'https://i.ibb.co/z5YHLV9/profile.png',
+      default: 'https://i.ibb.co.com/4VyT9gr/Epty-Image-User.jpg',
     },
     bio: {
       type: String,

@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { BookControllers } from './book.controller';
-import { USER_ROLE } from '../User/user.constant';
-import validateAuth from '../../middlewares/validateAuth';
 import { upload } from '../../helpers/uploadConfig';
+import validateAuth from '../../middlewares/validateAuth';
+import { USER_ROLE } from '../User/user.constant';
+import { BookControllers } from './book.controller';
 
 const router = Router();
 
@@ -17,7 +17,7 @@ router
       { name: 'coverImage', maxCount: 1 },
       { name: 'pdf', maxCount: 1 },
     ]),
-
+  
     BookControllers.createBook,
   );
 
