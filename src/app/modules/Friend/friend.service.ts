@@ -1,9 +1,9 @@
-import { JwtPayload } from 'jsonwebtoken';
-import { IFriend } from './friend.interface';
-import ApiError from '../../errors/ApiError';
 import httpStatus from 'http-status';
-import { Friend } from './friend.model';
+import { JwtPayload } from 'jsonwebtoken';
+import ApiError from '../../errors/ApiError';
 import { User } from '../User/user.model';
+import { IFriend } from './friend.interface';
+import { Friend } from './friend.model';
 
 const getFriendSuggestionsFromDB = async (user: JwtPayload) => {
   // Step 1: Find all users with similar interests excluding the current user
@@ -162,7 +162,7 @@ const getAllSentFriendRequestsFromDB = async (user: JwtPayload) => {
   const userIds = sentRequests?.map((request) => request?.recipientId);
 
   return await User.find({ _id: { $in: userIds } }).select(
-    'fullName avatar bio',
+    'fullName avatar  bio email',
   );
 };
 
@@ -175,7 +175,7 @@ const getAllReceivedFriendRequestsFromDB = async (user: JwtPayload) => {
   const userIds = receivedRequests?.map((request) => request?.senderId);
 
   const existingFriends = await User.find({ _id: { $in: userIds } }).select(
-    'fullName avatar',
+    'fullName avatar bio email',
   );
 
   // Fetch total friend count for each user in parallel
