@@ -10,8 +10,18 @@ export const VIDEO_FIELD_NAMES = ['propertyVideo'];
 export const AUDIO_FIELD_NAMES = ['audio'];
 export const PDF_FIELD_NAMES = ['pdf'];
 
-export const SUPPORTED_IMAGE_FORMATS = ['image/jpg', 'image/jpeg', 'image/png'];
-export const SUPPORTED_AUDIO_FORMATS = ['audio/mpeg'];
+export const SUPPORTED_IMAGE_FORMATS = [
+  'image/jpg',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+];
+export const SUPPORTED_AUDIO_FORMATS = [
+  'audio/mpeg',
+  'audio/mp3',
+  'audio/wav',
+  'audio/mp4',
+];
 export const SUPPORTED_PDF_FORMATS = ['application/pdf'];
 export const SUPPORTED_VIDEO_FORMATS = ['video/mp4'];
 

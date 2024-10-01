@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
+
 import httpStatus from 'http-status';
 import { JwtPayload } from 'jsonwebtoken';
 import config from '../config';
+import ApiError from '../errors/ApiError';
+import { verifyJwtToken } from '../helpers/tokenUtils';
+import { TUserRole } from '../modules/User/user.interface';
 import { User } from '../modules/User/user.model';
 import catchAsync from '../utils/catchAsync';
-import ApiError from '../errors/ApiError';
-import { TUserRole } from '../modules/User/user.interface';
-import { verifyJwtToken } from '../helpers/tokenUtils';
 
 const validateAuth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -59,7 +60,6 @@ const validateAuth = (...requiredRoles: TUserRole[]) => {
       if (requiredRoles && !requiredRoles.includes(decoded?.role)) {
         throw new ApiError(httpStatus.UNAUTHORIZED, 'You are not authorized!');
       }
-
       req.user = decoded as JwtPayload;
       next();
     }

@@ -11,18 +11,17 @@ import { MessageService } from './message.service';
 const sendMessage = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
   const data = req.body;
-
   const { path } = req.body;
 
-  const messageData:any = {
+  const messageData: any = {
     chatId: data.chatId,
     sender: user?.userId,
-    text : data?.text,
+    text: data?.text,
   };
 
-  if(path){
+  if (path) {
     messageData.path = path;
-    messageData.messageType = "book";
+    messageData.messageType = 'book';
   }
 
   if (req.files && 'image' in req.files && req.files.image[0]) {
@@ -30,7 +29,6 @@ const sendMessage = catchAsync(async (req: Request, res: Response) => {
     messageData.messageType = fileType(req.files.image[0].mimetype);
   }
 
- 
   if (req.files && 'audio' in req.files && req.files.audio[0]) {
     messageData.audio = `/audios/${req.files.audio[0].filename}`;
     messageData.messageType = fileType(req.files.audio[0].mimetype);
