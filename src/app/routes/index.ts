@@ -1,21 +1,21 @@
-import { Router } from 'express';
-import { UserRoutes } from '../modules/User/user.route';
-import { AuthRoutes } from '../modules/Auth/auth.route';
-import { FaqRoutes } from '../modules/FAQ/faq.route';
-import { PrivacyPolicyRoutes } from '../modules/PrivacyPolicy/privacyPolicy.route';
 import { AboutSicRoutes } from '../modules/AboutSic/aboutSic.route';
-import { TermsAndConditionRoutes } from '../modules/TermsAndConditions/termsAndConditions.route';
-import { FriendRoutes } from '../modules/Friend/friend.route';
-import { ChatRoutes } from '../modules/chat/chat.route';
-import { MessageRoutes } from '../modules/message/message.route';
-import { SicGuidelinesRoutes } from '../modules/SicGuidelines/sicGuidelines.route';
-import { FacedownRoutes } from '../modules/Facedown/facedown.route';
-import { DonationRoutes } from '../modules/Donation/donation.route';
-import { PaymentRoutes } from '../modules/Payment/payment.route';
-import { CategoryRoutes } from '../modules/Category/category.route';
+import { AuthRoutes } from '../modules/Auth/auth.route';
 import { BookRoutes } from '../modules/Book/book.route';
-import { FeedbackRoutes } from '../modules/Feedback/feedback.route';
+import { CategoryRoutes } from '../modules/Category/category.route';
+import { ChatRoutes } from '../modules/chat/chat.route';
 import { DashboardRoutes } from '../modules/Dashboard/dashboard.route';
+import { DonationRoutes } from '../modules/Donation/donation.route';
+import { FacedownRoutes } from '../modules/Facedown/facedown.route';
+import { FaqRoutes } from '../modules/FAQ/faq.route';
+import { FeedbackRoutes } from '../modules/Feedback/feedback.route';
+import { FriendRoutes } from '../modules/Friend/friend.route';
+import { MessageRoutes } from '../modules/message/message.route';
+import { PaymentRoutes } from '../modules/Payment/payment.route';
+import { PrivacyPolicyRoutes } from '../modules/PrivacyPolicy/privacyPolicy.route';
+import { Router } from 'express';
+import { SicGuidelinesRoutes } from '../modules/SicGuidelines/sicGuidelines.route';
+import { TermsAndConditionRoutes } from '../modules/TermsAndConditions/termsAndConditions.route';
+import { UserRoutes } from '../modules/User/user.route';
 
 const router = Router();
 

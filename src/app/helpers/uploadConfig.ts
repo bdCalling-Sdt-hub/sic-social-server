@@ -1,11 +1,11 @@
+import httpStatus from 'http-status';
 import multer from 'multer';
 import path from 'path';
-import ApiError from '../errors/ApiError';
-import httpStatus from 'http-status';
-import createDirectory from './createDirectory';
 import { FIELD_NAME_TO_FORMATS } from '../constants/file.constant';
-import getUploadFolder from './getUploadFolder';
+import ApiError from '../errors/ApiError';
+import createDirectory from './createDirectory';
 import { unlinkFiles } from './fileHandler';
+import getUploadFolder from './getUploadFolder';
 
 // Base directory for uploads
 const baseUploadDirectory = path.join(process.cwd(), 'uploads');
@@ -19,7 +19,6 @@ const storage = multer.diskStorage({
     const { fieldname } = file;
     // Determine upload folder based on fieldname
     const uploadFolder = getUploadFolder(fieldname);
-
 
     if (!uploadFolder) {
       throw new ApiError(
@@ -55,7 +54,7 @@ const upload = multer({
 
   fileFilter: function (req, file, cb) {
     const { fieldname, mimetype } = file;
-
+    // console.warn(fieldname, mimetype);
     // Retrieve the list of supported formats for the given fieldname
     const supportedFormats = FIELD_NAME_TO_FORMATS[fieldname];
 

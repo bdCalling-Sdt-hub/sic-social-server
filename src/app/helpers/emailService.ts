@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendEmail = async (payload: ISendEmail) => {
-  // return;
+  return;
   // console.log(payload);
   try {
     const info = await transporter.sendMail({
@@ -35,4 +35,3 @@ const sendEmail = async (payload: ISendEmail) => {
 };
 
 export { sendEmail };
-
