@@ -12,7 +12,6 @@ import cron from 'node-cron';
 import path from 'path';
 import QueryBuilder from '../../builder/QueryBuilder';
 import ApiError from '../../errors/ApiError';
-import { sendEmail } from '../../helpers/emailService';
 import { unlinkFile } from '../../helpers/fileHandler';
 import generateOtp from '../../helpers/generateOtp';
 import { IUser } from './user.interface';
@@ -20,7 +19,7 @@ import { User } from './user.model';
 
 const createUserToDB = async (payload: IUser) => {
   // Check if a user with the provided email already exists
-  console.log(payload);
+  // console.log(payload);
   if (await User.isUserExistsByEmail(payload?.email)) {
     throw new ApiError(
       httpStatus.CONFLICT,
@@ -63,7 +62,7 @@ const createUserToDB = async (payload: IUser) => {
   };
 
   // Send the verification email to the user
-  await sendEmail(emailOptions);
+  // await sendEmail(emailOptions);
 
   // Create the new user in the database
   await User.create(payload);
