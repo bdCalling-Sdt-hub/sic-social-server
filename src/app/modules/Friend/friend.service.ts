@@ -7,8 +7,11 @@ import { Friend } from './friend.model';
 
 const getFriendSuggestionsFromDB = async (user: JwtPayload) => {
   // Step 1: Find all users with similar interests excluding the current user
+
+  const userDetails = await User.findById(user?.userId);
   const usersWithSimilarInterests = await User.find({
-    interests: { $in: user?.interests },
+    $where: user.id,
+    interests: { $in: userDetails?.interests },
     _id: { $ne: user?.userId }, // Exclude the current user
   });
 
