@@ -12,7 +12,7 @@ const getFriendSuggestionsFromDB = async (user: JwtPayload) => {
   const usersWithSimilarInterests = await User.find({
     interests: { $in: userDetails?.interests },
     _id: { $ne: user?.userId }, // Exclude the current user
-  });
+  }).select('fullName avatar bio email');
 
   // Step 2: Find all friend requests where the current user is involved
   const friendRequests = await Friend.find({
@@ -31,8 +31,13 @@ const getFriendSuggestionsFromDB = async (user: JwtPayload) => {
   const suggestions = usersWithSimilarInterests.filter(
     (potentialFriend) => !friendUserIds?.has(potentialFriend?._id),
   );
-
-  return suggestions;
+  const usersWithFriendCount = await Promise.all(
+    suggestions?.map(async (user) => ({
+      ...user?.toObject(),
+      totalFriends: await Friend.getTotalFriendsCount(user?._id?.toString()),
+    })),
+  );
+  return usersWithFriendCount;
 };
 
 const sendFriendRequestToDB = async (user: JwtPayload, payload: IFriend) => {
@@ -172,7 +177,7 @@ const getAllReceivedFriendRequestsFromDB = async (user: JwtPayload) => {
   const receivedRequests = await Friend.find({
     recipientId: user?.userId,
     status: 'pending',
-  });
+  }).populate('status');
 
   const userIds = receivedRequests?.map((request) => request?.senderId);
 
