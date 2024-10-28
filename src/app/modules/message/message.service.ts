@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Message } from './message.model';
@@ -11,6 +12,7 @@ const sendMessageToDB = async (payload: any) => {
   } */
   
   //message
+  //@ts-ignore
   const socketIo = global.io
   if (socketIo) {
     socketIo.emit(`message::${payload.chatId}`, result)
