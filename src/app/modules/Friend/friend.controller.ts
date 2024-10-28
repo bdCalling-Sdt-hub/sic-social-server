@@ -5,7 +5,7 @@ import { FriendServices } from './friend.service';
 
 const getFriendSuggestions = catchAsync(async (req, res) => {
   const result = await FriendServices.getFriendSuggestionsFromDB(req?.user);
-
+  // console.log(result);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

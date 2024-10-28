@@ -1,17 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import httpStatus from 'http-status';
 import { JwtPayload } from 'jsonwebtoken';
-import { IBook } from './book.interface';
-import { Book } from './book.model';
 import QueryBuilder from '../../builder/QueryBuilder';
 import ApiError from '../../errors/ApiError';
-import httpStatus from 'http-status';
 import { unlinkFile } from '../../helpers/fileHandler';
 import getPathAfterUploads from '../../helpers/getPathAfterUploads';
+import { IBook } from './book.interface';
+import { Book } from './book.model';
 
 const createBookToDB = async (user: JwtPayload, payload: IBook, files: any) => {
   // Set the createdBy field to the ID of the user who is creating
   payload.createdBy = user?.userId;
+
+
+  
 
   // Extract and set the image file path
   if (files && files?.coverImage) {

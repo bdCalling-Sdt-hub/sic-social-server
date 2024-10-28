@@ -1,20 +1,16 @@
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
 import express, { Request, Response } from 'express';
-import router from './app/routes';
+
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import notFound from './app/middlewares/notFound';
 import requestLogger from './app/middlewares/requestLogger';
+import router from './app/routes';
 
 const app = express();
 
 // middlewares
-app.use(
-  cors({
-    origin: 'http://192.168.10.13:3002',
-    credentials: true,
-  }),
-);
+app.use(cors());
 
 app.use(express.json());
 app.use(cookieParser());

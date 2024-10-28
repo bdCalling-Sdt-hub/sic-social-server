@@ -1,16 +1,18 @@
-import { JwtPayload } from 'jsonwebtoken';
-import { IFriend } from './friend.interface';
-import ApiError from '../../errors/ApiError';
 import httpStatus from 'http-status';
-import { Friend } from './friend.model';
+import { JwtPayload } from 'jsonwebtoken';
+import ApiError from '../../errors/ApiError';
 import { User } from '../User/user.model';
+import { IFriend } from './friend.interface';
+import { Friend } from './friend.model';
 
 const getFriendSuggestionsFromDB = async (user: JwtPayload) => {
   // Step 1: Find all users with similar interests excluding the current user
+
+  const userDetails = await User.findById(user?.userId);
   const usersWithSimilarInterests = await User.find({
-    interests: { $in: user?.interests },
+    interests: { $in: userDetails?.interests },
     _id: { $ne: user?.userId }, // Exclude the current user
-  });
+  }).select('fullName avatar bio email');
 
   // Step 2: Find all friend requests where the current user is involved
   const friendRequests = await Friend.find({
@@ -29,8 +31,13 @@ const getFriendSuggestionsFromDB = async (user: JwtPayload) => {
   const suggestions = usersWithSimilarInterests.filter(
     (potentialFriend) => !friendUserIds?.has(potentialFriend?._id),
   );
-
-  return suggestions;
+  const usersWithFriendCount = await Promise.all(
+    suggestions?.map(async (user) => ({
+      ...user?.toObject(),
+      totalFriends: await Friend.getTotalFriendsCount(user?._id?.toString()),
+    })),
+  );
+  return usersWithFriendCount;
 };
 
 const sendFriendRequestToDB = async (user: JwtPayload, payload: IFriend) => {
@@ -162,7 +169,7 @@ const getAllSentFriendRequestsFromDB = async (user: JwtPayload) => {
   const userIds = sentRequests?.map((request) => request?.recipientId);
 
   return await User.find({ _id: { $in: userIds } }).select(
-    'fullName avatar bio',
+    'fullName avatar  bio email',
   );
 };
 
@@ -170,12 +177,12 @@ const getAllReceivedFriendRequestsFromDB = async (user: JwtPayload) => {
   const receivedRequests = await Friend.find({
     recipientId: user?.userId,
     status: 'pending',
-  });
+  }).populate('status');
 
   const userIds = receivedRequests?.map((request) => request?.senderId);
 
   const existingFriends = await User.find({ _id: { $in: userIds } }).select(
-    'fullName avatar',
+    'fullName avatar bio email',
   );
 
   // Fetch total friend count for each user in parallel

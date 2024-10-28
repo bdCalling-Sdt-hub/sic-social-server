@@ -12,8 +12,6 @@ const createChatToDB = async (payload: any) => {
       return isExistChat;
     }
   }
- 
-
   const conversation:any = await Chat.create({ participants, type, facedown });
   return conversation;
 };
@@ -22,8 +20,9 @@ const chatListFromDB = async (user: JwtPayload) => {
 
   const chat = await Chat.find({
     participants: {
-      $in: user?.userId
-    }
+      $in: user?.userId,
+    },
+    type : "private"
   }).populate({
     path: 'participants',
     select: 'fullName avatar'
@@ -32,13 +31,16 @@ const chatListFromDB = async (user: JwtPayload) => {
 
   //Use Promise.all to handle the asynchronous operations inside the map
   const filters = await Promise.all(chat?.map(async (conversation) => {
-    const data = conversation?.toObject();
-    const lastMessage:any = await Message.findOne({ chatId: conversation?._id }).sort({ createdAt: -1 }).select("message createdAt")
-      
-      return {
-        ...data,
-        lastMessage: lastMessage?.message || ""
-      };
+
+    const data:any = conversation?.toObject();
+    const lastMessage:any = await Message.findOne({ chatId: conversation?._id })
+    .populate({path: "sender", select: "fullName"}) 
+    .sort({ createdAt: -1 })
+    .select("message createdAt audio image text path")
+    return {
+      ...data,
+      lastMessage: lastMessage || {}
+    };
   }));
   
   return filters;
