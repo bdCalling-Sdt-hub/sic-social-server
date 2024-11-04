@@ -2,7 +2,7 @@
 PORT=5000
 
 # Server IP Address
-IP_ADDRESS=192.168.10.202
+IP_ADDRESS=192.168.12.202
 
 # Environment Mode
 NODE_ENV=development
