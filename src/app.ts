@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import path from 'path';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import notFound from './app/middlewares/notFound';
 import requestLogger from './app/middlewares/requestLogger';
@@ -12,13 +13,16 @@ const app = express();
 // middlewares
 app.use(cors());
 
+// Serve static files from the public folder
+app.use(express.static(path.join(__dirname, '../public')));
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(requestLogger);
 app.use(express.static('uploads'));
+app.use(express.static('uploads'));
 
 //static file check
-app.use(express.static('uploads'));
 
 // Default route for the root URL
 app.get('/', (req: Request, res: Response) => {
