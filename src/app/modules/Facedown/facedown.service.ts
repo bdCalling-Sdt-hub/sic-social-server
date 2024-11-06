@@ -7,6 +7,7 @@ import { IFacedown } from './facedown.interface';
 import { Facedown } from './facedown.model';
 import getPathAfterUploads from '../../helpers/getPathAfterUploads';
 import { unlinkFile } from '../../helpers/fileHandler';
+import { Chat } from '../chat/chat.model';
 
 const createFacedownToDB = async (
   user: JwtPayload,
@@ -56,6 +57,16 @@ const updateFacedownByIdFromDB = async (
   return result;
 };
 
+
+const othersFacedownFromDB = async (id: string) => {
+
+  // get facedown ids from chat participants
+  const facedownIds = await Chat.find({ participants: { $all: [id] } }).distinct("facedown");
+
+  const facedown = await Facedown.find({ _id: { $in: facedownIds } });
+  return facedown;
+};
+
 const deleteFacedownByIdFromDB = async (facedownId: string) => {
   const existingFacedown = await Facedown.findByIdAndDelete(facedownId);
 
@@ -85,4 +96,5 @@ export const FacedownServices = {
   getFacedownsFromDB,
   updateFacedownByIdFromDB,
   deleteFacedownByIdFromDB,
+  othersFacedownFromDB
 };

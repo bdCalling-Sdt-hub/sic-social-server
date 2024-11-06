@@ -4,6 +4,8 @@ import ApiError from '../../errors/ApiError';
 import { User } from '../User/user.model';
 import { IFriend } from './friend.interface';
 import { Friend } from './friend.model';
+import mongoose from 'mongoose';
+import { Chat } from '../chat/chat.model';
 
 const getFriendSuggestionsFromDB = async (user: JwtPayload) => {
   // Step 1: Find all users with similar interests excluding the current user
@@ -221,6 +223,29 @@ const getFriendsListFromDB = async (user: JwtPayload) => {
   );
 };
 
+const friendProfileFromDB = async(id: string, user: JwtPayload) =>{
+
+  if (!mongoose.Types.ObjectId.isValid(id)) throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Friend ID");
+
+  const [friend, totalFriends, isFriend, chats] = await Promise.all([
+    User.findById(id).select("instagramUrl bio email fullName"),
+    Friend.countDocuments({ recipientId: id, status: "accepted" }),
+    Friend.exists({ recipientId: user.userId, senderId: id, status: "accepted" }),
+    Chat.find({ participants: {$in : [id]}, type: "public"}) // here participants is array on this array if the id include then query will match also type must be public
+  ]);
+
+  if(!friend) return {};
+
+  const data = {
+    ...friend,
+    totalFriend: totalFriends || 0,
+    isFriend: Boolean(isFriend),
+    chats
+  }
+
+  return data;
+}
+
 export const FriendServices = {
   getFriendSuggestionsFromDB,
   sendFriendRequestToDB,
@@ -230,4 +255,5 @@ export const FriendServices = {
   getAllSentFriendRequestsFromDB,
   getAllReceivedFriendRequestsFromDB,
   getFriendsListFromDB,
+  friendProfileFromDB
 };

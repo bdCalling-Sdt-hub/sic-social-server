@@ -49,4 +49,10 @@ router.get(
   FriendControllers.getAllSentFriendRequests,
 );
 
+router.get(
+  '/profile',
+  validateAuth(USER_ROLE.USER),
+  FriendControllers.friendProfile
+);
+
 export const FriendRoutes = router;
