@@ -10,7 +10,6 @@ export const VIDEO_FIELD_NAMES = ['propertyVideo'];
 export const AUDIO_FIELD_NAMES = ['audio'];
 export const PDF_FIELD_NAMES = ['pdf'];
 
-
 export const SUPPORTED_IMAGE_FORMATS = [
   'image/jpg',
   'image/jpeg',
@@ -22,6 +21,9 @@ export const SUPPORTED_AUDIO_FORMATS = [
   'audio/mp3',
   'audio/wav',
   'audio/mp4',
+  'audio/ogg',
+  'audio/aac',
+  'audio/m4a',
 ];
 
 export const SUPPORTED_PDF_FORMATS = ['application/pdf'];

@@ -36,7 +36,10 @@ const getFriendSuggestionsFromDB = async (user: JwtPayload) => {
   const usersWithFriendCount = await Promise.all(
     suggestions?.map(async (user) => ({
       ...user?.toObject(),
-      totalFriends: await Friend.getTotalFriendsCount(user?._id?.toString()),
+      totalFriends: await Friend.countDocuments({
+        recipientId: user?._id,
+        status: 'accepted',
+      }),
     })),
   );
   return usersWithFriendCount;
