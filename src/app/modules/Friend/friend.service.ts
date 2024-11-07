@@ -45,6 +45,7 @@ const getFriendSuggestionsFromDB = async (user: JwtPayload) => {
 
 const sendFriendRequestToDB = async (user: JwtPayload, payload: IFriend) => {
   // Check if the user is trying to send a friend request to themselves
+  // console.log(payload?.recipientId);
   if (user?.userId === payload?.recipientId) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
@@ -53,6 +54,7 @@ const sendFriendRequestToDB = async (user: JwtPayload, payload: IFriend) => {
   }
 
   const targetUser = await User.findById(payload?.recipientId);
+  // console.log(targetUser);
 
   // Check if the user or targer exists
   if (!targetUser) {
