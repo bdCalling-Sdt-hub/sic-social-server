@@ -9,7 +9,6 @@ const router = Router();
 
 router
   .route('/')
-
   .get(FacedownControllers.getFacedowns)
 
   .post(
@@ -29,12 +28,13 @@ router
 
 router
   .route('/members')
-
   .get(MemberControllers.getMembers)
   .post(validateAuth(USER_ROLE.USER), MemberControllers.addMember);
 
 router
   .route('/members')
   .delete(validateAuth(USER_ROLE.USER), MemberControllers.removeMemberById);
+
+router.get("/others", validateAuth(USER_ROLE.USER), FacedownControllers.othersFacedown);
 
 export const FacedownRoutes = router;

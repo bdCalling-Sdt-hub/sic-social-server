@@ -102,6 +102,17 @@ const getFriendsList = catchAsync(async (req, res) => {
   });
 });
 
+const friendProfile = catchAsync(async (req, res) => {
+  const result = await FriendServices.friendProfileFromDB(req.params.id, req?.user);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Friend list retrieved successfully!',
+    data: result,
+  });
+});
+
 export const FriendControllers = {
   getFriendSuggestions,
   sendFriendRequest,
@@ -111,4 +122,5 @@ export const FriendControllers = {
   getAllReceivedFriendRequests,
   getAllSentFriendRequests,
   getFriendsList,
+  friendProfile
 };

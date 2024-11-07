@@ -56,9 +56,21 @@ const deleteFacedownById = catchAsync(async (req, res) => {
   });
 });
 
+const othersFacedown = catchAsync(async (req, res) => {
+  const result = await FacedownServices.othersFacedownFromDB(req.user?.userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Others Facedown Retrieved  successfully!',
+    data: result,
+  });
+});
+
 export const FacedownControllers = {
   createFacedown,
   getFacedowns,
   updateFacedownById,
   deleteFacedownById,
+  othersFacedown
 };
