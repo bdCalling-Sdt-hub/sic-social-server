@@ -13,17 +13,14 @@ const createBookToDB = async (user: JwtPayload, payload: IBook, files: any) => {
   // Set the createdBy field to the ID of the user who is creating
   payload.createdBy = user?.userId;
 
-
-  
-
   // Extract and set the image file path
-  if (files && files?.coverImage) {
-    payload.coverImage = getPathAfterUploads(files?.coverImage?.[0]?.path);
+  if (files && files?.bookImage) {
+    payload.bookImage = getPathAfterUploads(files?.bookImage?.[0]?.path);
   }
 
   // Extract and set the pdf file path
-  if (files && files?.bookPdf) {
-    payload.bookPdf = getPathAfterUploads(files?.bookPdf?.[0]?.path);
+  if (files && files?.pdf) {
+    payload.pdf = getPathAfterUploads(files?.pdf?.[0]?.path);
   }
 
   const result = await Book.create(payload);
@@ -78,24 +75,24 @@ const updateBookByIdFromDB = async (
   delete payload.createdBy;
 
   // If a new image is uploaded, update the image path in the payload
-  if (files && files?.coverImage) {
-    const newCoverImagePath = getPathAfterUploads(files?.coverImage[0]?.path);
+  if (files && files?.bookImage) {
+    const newCoverImagePath = getPathAfterUploads(files?.bookImage[0]?.path);
 
     // If a new image file is uploaded, update the image path in the payload
-    if (existingBook?.coverImage !== newCoverImagePath) {
-      payload.coverImage = newCoverImagePath; // Update the payload with the new image path
-      unlinkFile(existingBook?.coverImage); // Remove the old image file
+    if (existingBook?.bookImage !== newCoverImagePath) {
+      payload.bookImage = newCoverImagePath; // Update the payload with the new image path
+      unlinkFile(existingBook?.bookImage); // Remove the old image file
     }
   }
 
   // If a new image is uploaded, update the image path in the payload
-  if (files && files?.bookPdf) {
-    const newBookPdfPath = getPathAfterUploads(files?.coverImage[0]?.path);
+  if (files && files?.pdf) {
+    const newBookPdfPath = getPathAfterUploads(files?.bookImage[0]?.path);
 
     // If a new image file is uploaded, update the image path in the payload
-    if (existingBook?.bookPdf !== newBookPdfPath) {
-      payload.bookPdf = newBookPdfPath; // Update the payload with the new image path
-      unlinkFile(existingBook?.bookPdf); // Remove the old image file
+    if (existingBook?.pdf !== newBookPdfPath) {
+      payload.pdf = newBookPdfPath; // Update the payload with the new image path
+      unlinkFile(existingBook?.pdf); // Remove the old image file
     }
   }
 
@@ -113,12 +110,12 @@ const deleteBookByIdFromDB = async (bookId: string) => {
   const result = await Book.findByIdAndDelete(bookId);
 
   // If the Book entry has an associated image, remove the image file
-  if (result?.coverImage) {
-    unlinkFile(result?.coverImage);
+  if (result?.bookImage) {
+    unlinkFile(result?.bookImage);
   }
 
-  if (result?.bookPdf) {
-    unlinkFile(result?.bookPdf);
+  if (result?.pdf) {
+    unlinkFile(result?.pdf);
   }
 
   // If the Book entry does not exist, throw an error

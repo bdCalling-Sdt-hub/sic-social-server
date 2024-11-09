@@ -17,11 +17,11 @@ const bookSchema = new Schema<IBook>(
       type: String,
       required: true,
     },
-    coverImage: {
+    bookImage: {
       type: String,
       required: true,
     },
-    bookPdf: {
+    pdf: {
       type: String,
       required: true,
     },

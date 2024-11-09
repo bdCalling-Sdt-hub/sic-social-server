@@ -4,7 +4,7 @@ import sendResponse from '../../utils/sendResponse';
 import { BookServices } from './book.service';
 
 const createBook = catchAsync(async (req, res) => {
-  console.log(req?.body);
+  // console.log(req?.body);
   const result = await BookServices.createBookToDB(
     req?.user,
     req?.body,
@@ -20,7 +20,6 @@ const createBook = catchAsync(async (req, res) => {
 });
 
 const getBooks = catchAsync(async (req, res) => {
-
   const result = await BookServices.getBooksFromDB(req?.query);
 
   sendResponse(res, {
