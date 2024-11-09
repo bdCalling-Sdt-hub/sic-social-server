@@ -20,6 +20,10 @@ router
 
     BookControllers.createBook,
   );
+router
+  .route('/category/:category')
+
+  .get(BookControllers.getBookByCategory);
 
 router
   .route('/:id')

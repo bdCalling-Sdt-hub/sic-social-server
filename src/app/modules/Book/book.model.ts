@@ -17,6 +17,10 @@ const bookSchema = new Schema<IBook>(
       type: String,
       required: true,
     },
+    category: {
+      type: String,
+      required: true,
+    },
     bookImage: {
       type: String,
       required: true,

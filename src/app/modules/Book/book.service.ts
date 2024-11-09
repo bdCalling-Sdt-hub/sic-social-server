@@ -2,10 +2,10 @@
 
 import httpStatus from 'http-status';
 import { JwtPayload } from 'jsonwebtoken';
-import QueryBuilder from '../../builder/QueryBuilder';
 import ApiError from '../../errors/ApiError';
 import { unlinkFile } from '../../helpers/fileHandler';
 import getPathAfterUploads from '../../helpers/getPathAfterUploads';
+import { Category } from '../Category/category.model';
 import { IBook } from './book.interface';
 import { Book } from './book.model';
 
@@ -29,15 +29,21 @@ const createBookToDB = async (user: JwtPayload, payload: IBook, files: any) => {
 
 const getBooksFromDB = async (query: Record<string, unknown>) => {
   // Build the query using QueryBuilder with the given query parameters
-  const BooksQuery = new QueryBuilder(Book.find(), query)
-    .sort() // Apply sorting based on the query parameter
-    .paginate(); // Apply pagination based on the query parameter
+  const categories = await Category.find().lean();
+  if (!categories) return [];
+  const results = await Promise.all(
+    categories?.map(async (category: any) => {
+      return {
+        name: category.name,
+        count: (await Book.countDocuments({ category: category.name })) || 0,
 
-  // Get the total count of matching documents and total pages for pagination
-  const meta = await BooksQuery.countTotal();
-  const result = await BooksQuery.modelQuery;
-
-  return { meta, result };
+        booksList: await Book.find({ category: category.name })
+          .lean()
+          .select('name bookUrl bookImage publisher category pdf'),
+      };
+    }),
+  );
+  return results;
 };
 
 const getBookByIdFromDB = async (bookId: string) => {
@@ -49,6 +55,22 @@ const getBookByIdFromDB = async (bookId: string) => {
     throw new ApiError(
       httpStatus.NOT_FOUND,
       `Book with ID: ${bookId} not found!`,
+    );
+  }
+
+  return result;
+};
+const getBookByCategoryFromDB = async (category: string) => {
+  // Find the Book by ID
+  const result = await Book.find({ category: category }).select(
+    'name bookUrl bookImage publisher category pdf',
+  );
+
+  // Handle case where no Book is found
+  if (!result) {
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      `Book with ID: ${category} not found!`,
     );
   }
 
@@ -133,4 +155,5 @@ export const BookServices = {
   getBookByIdFromDB,
   updateBookByIdFromDB,
   deleteBookByIdFromDB,
+  getBookByCategoryFromDB,
 };
