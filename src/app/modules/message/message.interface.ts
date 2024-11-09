@@ -6,7 +6,7 @@ export type IMessage = {
   text?:string;
   audio?:string;
   image?:string;
-  path?:string;
-  messageType: 'text' | 'image' | 'audio' | 'book';
+  url?:string;
+  messageType: 'text' | 'image' | 'audio' | 'book' | 'both';
   friendsType: 'public' | 'friend' | 'group' | 'facedown';
 };

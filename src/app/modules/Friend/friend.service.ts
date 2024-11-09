@@ -231,9 +231,10 @@ const friendProfileFromDB = async(id: string, user: JwtPayload) =>{
   if (!mongoose.Types.ObjectId.isValid(id)) throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Friend ID");
 
   const [friend, totalFriends, isFriend, chats] = await Promise.all([
-    User.findById(id).select("instagramUrl bio email fullName"),
+    User.findById(id).select("instagramUrl bio email fullName").lean(),
     Friend.countDocuments({ recipientId: id, status: "accepted" }),
-    Friend.exists({ recipientId: user.userId, senderId: id, status: "accepted" }),
+    Friend.findOne({ recipientId: user.userId, senderId: id }).select("status")
+    ,
     Chat.find({ participants: {$in : [id]}, type: "public"}) // here participants is array on this array if the id include then query will match also type must be public
   ]);
 

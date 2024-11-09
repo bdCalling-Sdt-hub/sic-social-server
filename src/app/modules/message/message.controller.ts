@@ -1,17 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Request, Response } from 'express';
-
+import path from 'path';
 import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 import { fileType } from '../../utils/fileType';
 import sendResponse from '../../utils/sendResponse';
 import { MessageService } from './message.service';
+import { voiceToText } from '../../helpers/getTextFromVoice';
+const UPLOADS_BASE_DIR = path.resolve('uploads');
 
 const sendMessage = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
   const data = req.body;
-  const { path } = req.body;
+  const { url } = req.body;
 
   const messageData: any = {
     chatId: data.chatId,
@@ -19,8 +21,8 @@ const sendMessage = catchAsync(async (req: Request, res: Response) => {
     text: data?.text,
   };
 
-  if (path) {
-    messageData.path = path;
+  if (url) {
+    messageData.url = url;
     messageData.messageType = 'book';
   }
 
@@ -30,7 +32,17 @@ const sendMessage = catchAsync(async (req: Request, res: Response) => {
   }
 
   if (req.files && 'audio' in req.files && req.files.audio[0]) {
-    messageData.audio = `/audios/${req.files.audio[0].filename}`;
+    const audioFilePath = `/audios/${req.files.audio[0].filename}`;
+    messageData.audio = audioFilePath;
+
+    try {
+      const fullPath = path.join(UPLOADS_BASE_DIR, audioFilePath);
+      const transcription = await voiceToText(fullPath);
+      messageData.text = transcription;
+      messageData.messageType = "both"
+    } catch (error:any) {
+      return res.status(500).json({ error: error });
+    }
     messageData.messageType = fileType(req.files.audio[0].mimetype);
   }
 

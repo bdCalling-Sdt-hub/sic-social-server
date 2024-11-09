@@ -4,12 +4,8 @@
 import { Message } from './message.model';
 
 const sendMessageToDB = async (payload: any) => {
-
   const result = await Message.create(payload);
 
-  /* if(!result){
-    unlinkFile(payload?.message);
-  } */
   
   //message
   //@ts-ignore

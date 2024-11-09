@@ -25,13 +25,13 @@ const messageSchema = new Schema<IMessage>(
       type: String,
       required: false
     },
-    path: {
+    url: {
       type: String,
       required: false
     },
     messageType: {
       type: String,
-      enum: ['text', 'image', 'audio', 'join', 'facedown', 'book'],
+      enum: ['text', 'image', 'audio', 'join', 'facedown', 'book', "both"],
       default: "text"
     },
     friendsType: {
