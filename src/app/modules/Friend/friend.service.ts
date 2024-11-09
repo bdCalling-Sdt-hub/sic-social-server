@@ -1,52 +1,57 @@
 import httpStatus from 'http-status';
 import { JwtPayload } from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import ApiError from '../../errors/ApiError';
+import { Chat } from '../chat/chat.model';
+import { Message } from '../message/message.model';
 import { User } from '../User/user.model';
 import { IFriend } from './friend.interface';
 import { Friend } from './friend.model';
-import mongoose from 'mongoose';
-import { Chat } from '../chat/chat.model';
 
 const getFriendSuggestionsFromDB = async (user: JwtPayload) => {
-  // Step 1: Find all users with similar interests excluding the current user
-
+  // Step 1: Find the current user's details
   const userDetails = await User.findById(user?.userId);
+
+  // Step 2: Find users with similar interests, excluding the current user
   const usersWithSimilarInterests = await User.find({
     interests: { $in: userDetails?.interests },
     _id: { $ne: user?.userId }, // Exclude the current user
   }).select('fullName avatar bio email');
 
-  // Step 2: Find all friend requests where the current user is involved
+  // Step 3: Find friend requests with 'accepted' or 'pending' status where the current user is involved
   const friendRequests = await Friend.find({
     $or: [{ senderId: user?.userId }, { recipientId: user?.userId }],
+    status: { $in: ['accepted', 'pending'] },
   });
 
-  // Step 3: Extract user IDs of all friends and pending requests
-  const friendUserIds = new Set(
-    friendRequests?.flatMap((request) => [
-      request?.senderId,
-      request?.recipientId,
+  // Step 4: Collect IDs of users involved in these friend requests with 'accepted' or 'pending' status
+  const excludedUserIds = new Set(
+    friendRequests.flatMap((request) => [
+      request.senderId.toString(),
+      request.recipientId.toString(),
     ]),
   );
 
-  // Step 4: Filter out users who have already received a friend request or are friends
+  // Step 5: Filter out users who have any 'accepted' or 'pending' requests with the current user
   const suggestions = usersWithSimilarInterests.filter(
-    (potentialFriend) => !friendUserIds?.has(potentialFriend?._id),
+    (potentialFriend) => !excludedUserIds.has(potentialFriend._id.toString()),
   );
+
+  // Step 6: Add friend count for each suggested user
   const usersWithFriendCount = await Promise.all(
-    suggestions?.map(async (user) => ({
-      ...user?.toObject(),
+    suggestions.map(async (user) => ({
+      ...user.toObject(),
       totalFriends: await Friend.countDocuments({
-        recipientId: user?._id,
+        recipientId: user._id,
         status: 'accepted',
       }),
     })),
   );
+
   return usersWithFriendCount;
 };
 
 const sendFriendRequestToDB = async (user: JwtPayload, payload: IFriend) => {
-  // Check if the user is trying to send a friend request to themselves
   if (user?.userId === payload?.recipientId) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
@@ -56,7 +61,6 @@ const sendFriendRequestToDB = async (user: JwtPayload, payload: IFriend) => {
 
   const targetUser = await User.findById(payload?.recipientId);
 
-  // Check if the user or targer exists
   if (!targetUser) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Target user does not exist!');
   }
@@ -64,8 +68,8 @@ const sendFriendRequestToDB = async (user: JwtPayload, payload: IFriend) => {
   // Check if a friend request or friendship already exists
   const existingRequest = await Friend.findOne({
     $or: [
-      { senderId: user?.userId, recipientId: payload?.recipientId }, // Sent request
-      { senderId: payload?.recipientId, recipientId: user?.userId }, // Received request
+      { senderId: user?.userId, recipientId: payload?.recipientId },
+      { senderId: payload?.recipientId, recipientId: user?.userId },
     ],
   });
 
@@ -83,7 +87,6 @@ const sendFriendRequestToDB = async (user: JwtPayload, payload: IFriend) => {
     }
   }
 
-  // Create a new friend request
   const friendRequest = new Friend({
     senderId: user?.userId,
     recipientId: payload?.recipientId,
@@ -97,13 +100,10 @@ const cancelFriendRequestToDB = async (
   user: JwtPayload,
   payload: { recipientId: string },
 ) => {
-  // Find and delete the friend request where the current user is the sender
   const friendRequest = await Friend.findOneAndDelete({
-    $or: [
-      { senderId: user?.userId, recipientId: payload?.recipientId },
-      { senderId: payload?.recipientId, recipientId: user?.userId },
-    ],
-    status: 'pending', // Ensure the request is still pending
+    senderId: user?.userId,
+    recipientId: payload?.recipientId,
+    status: 'pending',
   });
 
   if (!friendRequest) {
@@ -116,21 +116,23 @@ const cancelFriendRequestToDB = async (
 
 const removeFriendFromDB = async (
   user: JwtPayload,
-  payload: { recipientId: string },
+  payload: { senderId: string },
 ) => {
-  // Find and delete the friend request where the current user is the sender
+  // console.log(user, payload);
   const friendRequest = await Friend.findOneAndDelete({
     $or: [
-      { senderId: user?.userId, recipientId: payload?.recipientId },
-      { senderId: payload?.recipientId, recipientId: user?.userId },
+      { senderId: user?.userId, recipientId: payload?.senderId },
+      { senderId: payload?.senderId, recipientId: user?.userId },
     ],
-    status: 'approved', // Ensure the request is still pending
+    status: 'accepted',
   });
+
+  // console.log(friendRequest);
 
   if (!friendRequest) {
     throw new ApiError(
       httpStatus.NOT_FOUND,
-      'Friend request not found or already processed!',
+      'Friendship not found or already removed!',
     );
   }
 };
@@ -139,17 +141,9 @@ const acceptFriendRequestToDB = async (
   user: JwtPayload,
   payload: { senderId: string },
 ) => {
-  const senderUser = await User.findById(user?.userId);
-
-  // Check if the user or targer exists
-  if (!senderUser) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Sender user does not exist!');
-  }
-
-  // Find the friend request by ID and ensure it is pending
   const friendRequest = await Friend.findOne({
-    senderId: payload?.senderId, // Sent request
-    recipientId: user?.userId, // Received request
+    senderId: payload?.senderId,
+    recipientId: user?.userId,
     status: 'pending',
   });
 
@@ -160,7 +154,6 @@ const acceptFriendRequestToDB = async (
     );
   }
 
-  // Update the status to 'accepted'
   friendRequest.status = 'accepted';
   await friendRequest.save();
 };
@@ -174,7 +167,7 @@ const getAllSentFriendRequestsFromDB = async (user: JwtPayload) => {
   const userIds = sentRequests?.map((request) => request?.recipientId);
 
   return await User.find({ _id: { $in: userIds } }).select(
-    'fullName avatar  bio email',
+    'fullName avatar bio email',
   );
 };
 
@@ -182,7 +175,7 @@ const getAllReceivedFriendRequestsFromDB = async (user: JwtPayload) => {
   const receivedRequests = await Friend.find({
     recipientId: user?.userId,
     status: 'pending',
-  }).populate('status');
+  });
 
   const userIds = receivedRequests?.map((request) => request?.senderId);
 
@@ -190,11 +183,13 @@ const getAllReceivedFriendRequestsFromDB = async (user: JwtPayload) => {
     'fullName avatar bio email',
   );
 
-  // Fetch total friend count for each user in parallel
   const usersWithFriendCount = await Promise.all(
-    existingFriends?.map(async (user) => ({
+    existingFriends.map(async (user) => ({
       ...user?.toObject(),
-      totalFriends: await Friend.getTotalFriendsCount(user?._id?.toString()),
+      totalFriends: await Friend.countDocuments({
+        recipientId: user._id,
+        status: 'accepted',
+      }),
     })),
   );
 
@@ -202,7 +197,6 @@ const getAllReceivedFriendRequestsFromDB = async (user: JwtPayload) => {
 };
 
 const getFriendsListFromDB = async (user: JwtPayload) => {
-  // Fetch all friend requests that involve the user and have been accepted
   const friendRequests = await Friend.find({
     $or: [
       { senderId: user?.userId, status: 'accepted' },
@@ -210,45 +204,69 @@ const getFriendsListFromDB = async (user: JwtPayload) => {
     ],
   });
 
-  // Extract the IDs of friends dynamically depending on the user's role in the request
-  const friendUserIds = friendRequests?.map((request) => {
-    // If the user is the sender, the friend is the recipient
-    if (request?.senderId?.toString() === user?.userId) {
-      return request?.recipientId;
-    }
-    // If the user is the recipient, the friend is the sender
-    return request?.senderId;
-  });
+  const friendUserIds = friendRequests.map((request) =>
+    request.senderId.toString() === user.userId
+      ? request.recipientId
+      : request.senderId,
+  );
 
-  // Fetch the user documents of all friends
   return await User.find({ _id: { $in: friendUserIds } }).select(
     'fullName avatar',
   );
 };
 
-const friendProfileFromDB = async(id: string, user: JwtPayload) =>{
-
-  if (!mongoose.Types.ObjectId.isValid(id)) throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Friend ID");
-
-  const [friend, totalFriends, isFriend, chats] = await Promise.all([
-    User.findById(id).select("instagramUrl bio email fullName").lean(),
-    Friend.countDocuments({ recipientId: id, status: "accepted" }),
-    Friend.findOne({ recipientId: user.userId, senderId: id }).select("status")
-    ,
-    Chat.find({ participants: {$in : [id]}, type: "public"}) // here participants is array on this array if the id include then query will match also type must be public
+const friendProfileFromDB = async (id: string, user: JwtPayload) => {
+  if (!mongoose.Types.ObjectId.isValid(id))
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid Friend ID');
+  console.log(id);
+  const [friend, totalFriends, isFriend] = await Promise.all([
+    User.findById(id)
+      .select('instagramUrl bio email fullName avatar instagramUrl')
+      .lean(),
+    Friend.countDocuments({ recipientId: id, status: 'accepted' }),
+    Friend.findOne({
+      $or: [
+        { senderId: user.userId, recipientId: id },
+        { senderId: id, recipientId: user.userId },
+      ],
+    }).select('status senderId'),
   ]);
 
-  if(!friend) return {};
-
-  const data = {
-    ...friend,
-    totalFriend: totalFriends || 0,
-    isFriend: Boolean(isFriend),
-    chats
+  const chatQuery = { participants: { $in: [id] } };
+  if (!isFriend) {
+    chatQuery.type = 'public';
   }
 
-  return data;
-}
+  const chat = await Chat.find(chatQuery).populate({
+    path: 'participants',
+    select: 'fullName avatar',
+  });
+
+  const filters = await Promise.all(
+    chat.map(async (conversation) => {
+      const data = conversation.toObject();
+      const lastMessage = await Message.findOne({
+        chatId: conversation._id,
+      })
+        .populate({ path: 'sender', select: 'fullName' })
+        .sort({ createdAt: -1 })
+        .select('message createdAt audio image text path');
+      return {
+        ...data,
+        lastMessage: lastMessage || {},
+      };
+    }),
+  );
+
+  if (!friend) return {};
+
+  return {
+    ...friend,
+    totalFriend: totalFriends || 0,
+    isFriend: isFriend,
+    chats: filters || [],
+  };
+};
 
 export const FriendServices = {
   getFriendSuggestionsFromDB,
@@ -259,5 +277,5 @@ export const FriendServices = {
   getAllSentFriendRequestsFromDB,
   getAllReceivedFriendRequestsFromDB,
   getFriendsListFromDB,
-  friendProfileFromDB
+  friendProfileFromDB,
 };

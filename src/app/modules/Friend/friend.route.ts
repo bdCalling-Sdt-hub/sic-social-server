@@ -50,9 +50,9 @@ router.get(
 );
 
 router.get(
-  '/profile',
+  '/profile/:id',
   validateAuth(USER_ROLE.USER),
-  FriendControllers.friendProfile
+  FriendControllers.friendProfile,
 );
 
 export const FriendRoutes = router;

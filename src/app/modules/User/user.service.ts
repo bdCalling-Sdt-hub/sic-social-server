@@ -2,7 +2,6 @@
 
 import { endOfMonth, startOfMonth } from 'date-fns';
 import { errorLogger, logger } from '../../utils/winstonLogger';
-import { UserSearchableFields, userFieldsToExclude } from './user.constant';
 
 import colors from 'colors';
 import ejs from 'ejs';
@@ -14,6 +13,8 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import ApiError from '../../errors/ApiError';
 import { unlinkFile } from '../../helpers/fileHandler';
 import generateOtp from '../../helpers/generateOtp';
+import getPathAfterUploads from '../../helpers/getPathAfterUploads';
+import { UserSearchableFields } from './user.constant';
 import { IUser } from './user.interface';
 import { User } from './user.model';
 
@@ -180,12 +181,12 @@ const updateUserProfileToDB = async (
       'You do not have permission to update this property!',
     );
   }
-
+  // console.log(file);
   // Handle avatar update if a new avatar is uploaded
-  if (file?.avatar && file?.avatar) {
-    const newAvatarPath = file?.avatar?.path.replace(/\\/g, '/'); // Replace backslashes with forward slashes
-    payload.avatar = newAvatarPath;
+  if (file?.path) {
+    const newAvatarPath = getPathAfterUploads(file?.path);
 
+    payload.avatar = newAvatarPath;
     // Delete the old avatar file if it exists and is not the default
     if (
       existingUser?.avatar &&
@@ -196,8 +197,9 @@ const updateUserProfileToDB = async (
   }
 
   // Exclude specific fields from being updated
-  userFieldsToExclude?.forEach((field) => delete payload[field]);
+  // userFieldsToExclude?.forEach((field) => delete payload[field]);
 
+  // console.log(payload);
   // Update user profile with the filtered data and return the result
   const result = await User.findByIdAndUpdate(user?.userId, payload, {
     new: true,

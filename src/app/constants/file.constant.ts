@@ -34,6 +34,7 @@ export const FIELD_NAME_TO_FORMATS: { [key: string]: string[] } = {
   image: SUPPORTED_IMAGE_FORMATS,
   avatar: SUPPORTED_IMAGE_FORMATS,
   bookImage: SUPPORTED_IMAGE_FORMATS,
+  // coverImage: SUPPORTED_IMAGE_FORMATS,
   propertyImages: SUPPORTED_IMAGE_FORMATS,
   ownershipImages: SUPPORTED_IMAGE_FORMATS,
   propertyVideo: SUPPORTED_VIDEO_FORMATS,

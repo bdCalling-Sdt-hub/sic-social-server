@@ -14,10 +14,10 @@ router
   .post(
     validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
     upload.fields([
-      { name: 'coverImage', maxCount: 1 },
+      { name: 'bookImage', maxCount: 1 },
       { name: 'pdf', maxCount: 1 },
     ]),
-  
+
     BookControllers.createBook,
   );
 
@@ -29,7 +29,7 @@ router
   .patch(
     validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
     upload.fields([
-      { name: 'coverImage', maxCount: 1 },
+      { name: 'bookImage', maxCount: 1 },
       { name: 'pdf', maxCount: 1 },
     ]),
     BookControllers.updateBookById,

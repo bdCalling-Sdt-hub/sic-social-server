@@ -6,88 +6,94 @@ import { Chat } from './chat.model';
 
 const createChatToDB = async (payload: any) => {
   const { participants, type, facedown } = payload;
-  if(facedown){
+  if (facedown) {
     const isExistChat = await Chat.findOne({ participants, facedown, type });
-    if(isExistChat){
+    if (isExistChat) {
       return isExistChat;
     }
   }
-  const conversation:any = await Chat.create({ participants, type, facedown });
+  const conversation: any = await Chat.create({ participants, type, facedown });
   return conversation;
 };
 
 const chatListFromDB = async (user: JwtPayload) => {
-
   const chat = await Chat.find({
     participants: {
       $in: user?.userId,
     },
-    type : "private"
+    type: 'private',
   }).populate({
     path: 'participants',
-    select: 'fullName avatar'
+    select: 'fullName avatar',
   });
 
-
   //Use Promise.all to handle the asynchronous operations inside the map
-  const filters = await Promise.all(chat?.map(async (conversation) => {
+  const filters = await Promise.all(
+    chat?.map(async (conversation) => {
+      const data: any = conversation?.toObject();
+      const lastMessage: any = await Message.findOne({
+        chatId: conversation?._id,
+      })
+        .populate({ path: 'sender', select: 'fullName' })
+        .sort({ createdAt: -1 })
+        .select('message createdAt audio image text path');
+      return {
+        ...data,
+        lastMessage: lastMessage || {},
+      };
+    }),
+  );
 
-    const data:any = conversation?.toObject();
-    const lastMessage:any = await Message.findOne({ chatId: conversation?._id })
-    .populate({path: "sender", select: "fullName"}) 
-    .sort({ createdAt: -1 })
-    .select("message createdAt audio image text path")
-    return {
-      ...data,
-      lastMessage: lastMessage || {}
-    };
-  }));
-  
   return filters;
 };
 
 const publicChatListFromDB = async () => {
-  const chatId  = await Message.distinct('chatId');
+  const chatId = await Message.distinct('chatId');
 
   const chat = await Chat.find({
-    _id: {$in : chatId},
-    type: "public"
+    _id: { $in: chatId },
+    type: 'public',
   }).populate([
-    {path: 'participants', select: 'fullName avatar'},
-    {path: 'facedown', select: 'name image'}
+    { path: 'participants', select: 'fullName avatar' },
+    { path: 'facedown', select: 'name image' },
   ]);
 
-
   //Use Promise.all to handle the asynchronous operations inside the map
-  const filters = await Promise.all(chat?.map(async (conversation) => {
+  const filters = await Promise.all(
+    chat?.map(async (conversation) => {
+      const data: any = conversation?.toObject();
+      const lastMessage: any = await Message.findOne({
+        chatId: conversation?._id,
+      })
+        .populate({ path: 'sender', select: 'fullName' })
+        .sort({ createdAt: -1 })
+        .select('message createdAt audio image text path');
+      return {
+        ...data,
+        lastMessage: lastMessage || {},
+      };
+    }),
+  );
 
-    const data:any = conversation?.toObject();
-    const lastMessage:any = await Message.findOne({ chatId: conversation?._id })
-    .populate({path: "sender", select: "fullName"}) 
-    .sort({ createdAt: -1 })
-    .select("message createdAt audio image text path")
-    return {
-      ...data,
-      lastMessage: lastMessage || {}
-    };
-  }));
-  
   return filters;
 };
 
 // update chat participants member;
-const addMemberToDB = async (id: string, payload:any) => {
-
+const addMemberToDB = async (id: string, payload: any) => {
   const chat = await Chat.findOne({
     _id: id,
-    participants: payload
+    participants: payload,
   });
 
-  if(!chat){
-    await Chat.findByIdAndUpdate(id, { $addToSet: { participants: payload } }, { new: true });
+  if (!chat) {
+    await Chat.findByIdAndUpdate(
+      id,
+      { $addToSet: { participants: payload } },
+      { new: true },
+    );
     return;
   }
-  
+
   return;
 };
 
@@ -95,5 +101,5 @@ export const ChatService = {
   createChatToDB,
   chatListFromDB,
   publicChatListFromDB,
-  addMemberToDB
+  addMemberToDB,
 };
