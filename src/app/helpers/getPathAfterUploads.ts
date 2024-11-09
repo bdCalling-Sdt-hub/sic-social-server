@@ -4,7 +4,6 @@ import ApiError from '../errors/ApiError';
 const getPathAfterUploads = (fullPath: string) => {
   // Normalize path to use forward slashes
   const normalizedPath = fullPath?.replace(/\\/g, '/');
-
   // Find the index of 'uploads' in the normalized path
   const uploadsIndex = normalizedPath?.indexOf('uploads');
 

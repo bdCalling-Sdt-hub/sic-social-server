@@ -14,7 +14,7 @@ router
   // POST request to create a new about sic entry
   .post(
     validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
-    AboutSicControllers.getAboutSic,
+    AboutSicControllers.createAboutSic,
   );
 
 // PATCH request to update an existing about sic entry by its ID

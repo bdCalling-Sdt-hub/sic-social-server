@@ -1,6 +1,6 @@
+import httpStatus from 'http-status';
 import { JwtPayload } from 'jsonwebtoken';
 import ApiError from '../../errors/ApiError';
-import httpStatus from 'http-status';
 import { IAboutSic } from './aboutSic.interface';
 import { AboutSic } from './aboutSic.model';
 
@@ -19,8 +19,11 @@ const createAboutSicToDB = async (user: JwtPayload, payload: IAboutSic) => {
   // Set the createdBy field to the ID of the user who is creating the About Sic
   payload.createdBy = user?.userId;
 
+  // console.log(payload);
+
   // Create the new About Sic entry in the database
   const result = await AboutSic.create(payload);
+  // console.log(result);
   return result;
 };
 
