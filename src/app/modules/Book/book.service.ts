@@ -27,6 +27,14 @@ const createBookToDB = async (user: JwtPayload, payload: IBook, files: any) => {
   return result;
 };
 
+const getBooksAllFromDB = async (query: Record<string, unknown>) => {
+  // Build the query using QueryBuilder with the given query parameters
+  const books = await Book.find()
+    .lean()
+    .select('name bookUrl bookImage publisher category pdf');
+  if (!books) return [];
+  return books;
+};
 const getBooksFromDB = async (query: Record<string, unknown>) => {
   // Build the query using QueryBuilder with the given query parameters
   const categories = await Category.find().lean();
@@ -156,4 +164,5 @@ export const BookServices = {
   updateBookByIdFromDB,
   deleteBookByIdFromDB,
   getBookByCategoryFromDB,
+  getBooksAllFromDB,
 };

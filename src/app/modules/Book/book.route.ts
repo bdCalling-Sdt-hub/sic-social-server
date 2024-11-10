@@ -20,6 +20,12 @@ router
 
     BookControllers.createBook,
   );
+
+router
+  .route('/all')
+
+  .get(BookControllers.getBooksAll);
+
 router
   .route('/category/:category')
 

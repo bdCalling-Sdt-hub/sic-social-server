@@ -28,6 +28,18 @@ const getFacedowns = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const getFacedownById = catchAsync(async (req, res) => {
+  const result = await FacedownServices.getFacedownByIdFromDB(
+    req?.params?.facedownId,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Facedowns retrieved successfully!',
+    data: result,
+  });
+});
 
 const updateFacedownById = catchAsync(async (req, res) => {
   const result = await FacedownServices.updateFacedownByIdFromDB(
@@ -70,7 +82,8 @@ const othersFacedown = catchAsync(async (req, res) => {
 export const FacedownControllers = {
   createFacedown,
   getFacedowns,
+  getFacedownById,
   updateFacedownById,
   deleteFacedownById,
-  othersFacedown
+  othersFacedown,
 };

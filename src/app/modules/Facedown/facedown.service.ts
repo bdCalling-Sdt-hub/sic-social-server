@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import httpStatus from 'http-status';
 import { JwtPayload } from 'jsonwebtoken';
 import ApiError from '../../errors/ApiError';
-import httpStatus from 'http-status';
+import { unlinkFile } from '../../helpers/fileHandler';
+import getPathAfterUploads from '../../helpers/getPathAfterUploads';
+import { Chat } from '../chat/chat.model';
 import { IFacedown } from './facedown.interface';
 import { Facedown } from './facedown.model';
-import getPathAfterUploads from '../../helpers/getPathAfterUploads';
-import { unlinkFile } from '../../helpers/fileHandler';
-import { Chat } from '../chat/chat.model';
 
 const createFacedownToDB = async (
   user: JwtPayload,
@@ -18,19 +18,43 @@ const createFacedownToDB = async (
     payload.image = getPathAfterUploads(files?.image?.[0]?.path);
   }
 
-  if (files && files?.bookImage) {
-    payload.bookImage = getPathAfterUploads(files?.bookImage?.[0]?.path);
-  }
-
   payload.createdBy = user?.userId;
 
-  const result = await Facedown.create(payload);
+  const result = (await Facedown.create(payload)).populate({
+    path: 'book',
+    select: 'name bookUrl bookImage publisher category pdf',
+  });
   return result;
 };
 
 const getFacedownsFromDB = async () => {
-  const result = await Facedown.find();
+  const facedwon = await Facedown.find().select(
+    'name image createdBy description schedule book',
+  );
+
+  const result = Promise.all(
+    facedwon?.map(async (facedown: any) => {
+      const chatId: any = await Chat.findOne({
+        facedown: facedown?._id,
+      }).select('_id');
+      return {
+        ...facedown.toObject(),
+        chatId: chatId?._id,
+      };
+    }),
+  );
+
   return result;
+};
+const getFacedownByIdFromDB = async (id: string) => {
+  const result = await Facedown.findById(id)
+    .select('name image createdBy description schedule')
+    .populate({
+      path: 'book',
+      select: 'name bookUrl bookImage publisher category pdf',
+    });
+
+  return result || [];
 };
 
 const updateFacedownByIdFromDB = async (
@@ -57,14 +81,29 @@ const updateFacedownByIdFromDB = async (
   return result;
 };
 
-
 const othersFacedownFromDB = async (id: string) => {
-
   // get facedown ids from chat participants
-  const facedownIds = await Chat.find({ participants: { $all: [id] } }).distinct("facedown");
+  const facedownIds = await Chat.find({
+    participants: { $all: [id] },
+  }).distinct('facedown');
 
-  const facedown = await Facedown.find({ _id: { $in: facedownIds } });
-  return facedown;
+  const facedown = await Facedown.find({ _id: { $in: facedownIds } }).select(
+    'name image createdBy description schedule book',
+  );
+
+  const result = Promise.all(
+    facedown?.map(async (facedown: any) => {
+      const chatId: any = await Chat.findOne({
+        facedown: facedown?._id,
+      }).select('_id');
+      return {
+        ...facedown.toObject(),
+        chatId: chatId?._id,
+      };
+    }),
+  );
+
+  return result || [];
 };
 
 const deleteFacedownByIdFromDB = async (facedownId: string) => {
@@ -96,5 +135,6 @@ export const FacedownServices = {
   getFacedownsFromDB,
   updateFacedownByIdFromDB,
   deleteFacedownByIdFromDB,
-  othersFacedownFromDB
+  othersFacedownFromDB,
+  getFacedownByIdFromDB,
 };

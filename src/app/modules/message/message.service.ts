@@ -23,6 +23,10 @@ const sendMessageToDB = async (payload: any) => {
 const getMessagesFromDB = async (chatId: string) => {
   const result = await Message.find({ chatId })
     .populate({ path: 'sender', select: 'fullName avatar' })
+    .populate({
+      path: 'book',
+      select: 'name bookUrl bookImage publisher',
+    })
     .sort({ createdAt: -1 });
 
   return result;

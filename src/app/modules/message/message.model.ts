@@ -1,4 +1,5 @@
-import { model, Schema } from 'mongoose';
+import { Schema, model } from 'mongoose';
+
 import { IMessage } from './message.interface';
 
 const messageSchema = new Schema<IMessage>(
@@ -15,29 +16,30 @@ const messageSchema = new Schema<IMessage>(
     },
     text: {
       type: String,
-      required: false
+      required: false,
     },
     audio: {
       type: String,
-      required: false
+      required: false,
     },
     image: {
       type: String,
-      required: false
+      required: false,
     },
-    url: {
-      type: String,
-      required: false
+    book: {
+      type: Schema.Types.ObjectId,
+      ref: 'Book',
+      required: false,
     },
     messageType: {
       type: String,
-      enum: ['text', 'image', 'audio', 'join', 'facedown', 'book', "both"],
-      default: "text"
+      enum: ['text', 'image', 'audio', 'join', 'facedown', 'book', 'both'],
+      default: 'text',
     },
     friendsType: {
       type: String,
       enum: ['public', 'friend', 'group', 'facedown'],
-      default: "public"
+      default: 'public',
     },
   },
   { timestamps: true },
