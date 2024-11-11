@@ -35,6 +35,10 @@ const chatListFromDB = async (user: JwtPayload) => {
         chatId: conversation?._id,
       })
         .populate({ path: 'sender', select: 'fullName' })
+        .populate({
+          path: 'book',
+          select: 'name bookUrl bookImage publisher',
+        })
         .sort({ createdAt: -1 })
         .select('message createdAt audio image text path');
       return {
@@ -66,6 +70,10 @@ const publicChatListFromDB = async () => {
         chatId: conversation?._id,
       })
         .populate({ path: 'sender', select: 'fullName' })
+        .populate({
+          path: 'book',
+          select: 'name bookUrl bookImage publisher',
+        })
         .sort({ createdAt: -1 })
         .select('message createdAt audio image text path');
       return {
