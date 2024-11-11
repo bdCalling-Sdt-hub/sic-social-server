@@ -19,7 +19,7 @@ const createFacedown = catchAsync(async (req, res) => {
 });
 
 const getFacedowns = catchAsync(async (req, res) => {
-  const result = await FacedownServices.getFacedownsFromDB();
+  const result = await FacedownServices.getFacedownsFromDB(req?.user?.userId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
