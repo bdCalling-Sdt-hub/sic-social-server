@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+
 import { IFacedown } from './facedown.interface';
 
 const facedownSchema = new Schema<IFacedown>(
@@ -16,12 +17,12 @@ const facedownSchema = new Schema<IFacedown>(
       type: String,
       required: true,
     },
-    bookImage: {
-      type: String,
+    book: {
+      type: Schema.Types.ObjectId, // MongoDB ObjectId type
+      ref: 'Book', // Reference to the 'Book' model
     },
-    bookUrl: {
+    url: {
       type: String,
-      required: true,
     },
     description: {
       type: String,

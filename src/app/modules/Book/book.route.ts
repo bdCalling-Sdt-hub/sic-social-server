@@ -22,6 +22,16 @@ router
   );
 
 router
+  .route('/all')
+
+  .get(BookControllers.getBooksAll);
+
+router
+  .route('/category/:category')
+
+  .get(BookControllers.getBookByCategory);
+
+router
   .route('/:id')
 
   .get(BookControllers.getBookById)
