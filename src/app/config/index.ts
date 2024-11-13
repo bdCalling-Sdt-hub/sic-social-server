@@ -9,7 +9,10 @@ export default {
   nodeEnv: process.env.NODE_ENV,
   dbURL: process.env.DATABASE_URL,
   collectionName: process.env.COLLECTION_NAME,
-
+  agora: {
+    app_id: process.env.AGORA_APP_ID,
+    app_certificate: process.env.AGORA_APP_CERTIFICATE
+  },
   bcryptSaltRounds: process.env.BCRYPT_SALT_ROUNDS,
   jwtAccessSecret: process.env.JWT_ACCESS_SECRET,
   jwtRefreshSecret: process.env.JWT_REFRESH_SECRET,
