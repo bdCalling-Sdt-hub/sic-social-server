@@ -9,14 +9,16 @@ const router = Router();
 
 router
   .route('/')
-  .get(FacedownControllers.getFacedowns)
+  .get(validateAuth(USER_ROLE.USER), FacedownControllers.getFacedowns)
 
   .post(
     validateAuth(USER_ROLE.USER),
     upload.fields([{ name: 'image', maxCount: 1 }]),
     FacedownControllers.createFacedown,
   );
-
+router
+  .route('/others')
+  .get(validateAuth(USER_ROLE.USER), FacedownControllers.othersFacedown);
 router
   .route('/:facedownId')
 
@@ -32,9 +34,5 @@ router
 router
   .route('/members')
   .delete(validateAuth(USER_ROLE.USER), MemberControllers.removeMemberById);
-
-router
-  .route('/others/:facedownId')
-  .get(validateAuth(USER_ROLE.USER), FacedownControllers.othersFacedown);
 
 export const FacedownRoutes = router;

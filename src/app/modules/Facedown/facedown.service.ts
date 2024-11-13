@@ -27,8 +27,8 @@ const createFacedownToDB = async (
   return result;
 };
 
-const getFacedownsFromDB = async () => {
-  const facedwon = await Facedown.find().select(
+const getFacedownsFromDB = async (id: string) => {
+  const facedwon = await Facedown.find({ createdBy: id }).select(
     'name image createdBy description schedule book',
   );
 
@@ -87,10 +87,11 @@ const othersFacedownFromDB = async (id: string) => {
     participants: { $all: [id] },
   }).distinct('facedown');
 
-  const facedown = await Facedown.find({ _id: { $in: facedownIds } }).select(
-    'name image createdBy description schedule book',
-  );
-
+  const facedown = await Facedown.find({
+    _id: { $in: facedownIds },
+    createdBy: { $ne: id },
+  }).select('name image createdBy description schedule book');
+  if (!facedown) return [];
   const result = Promise.all(
     facedown?.map(async (facedown: any) => {
       const chatId: any = await Chat.findOne({
