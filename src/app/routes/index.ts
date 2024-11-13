@@ -16,6 +16,7 @@ import { Router } from 'express';
 import { SicGuidelinesRoutes } from '../modules/SicGuidelines/sicGuidelines.route';
 import { TermsAndConditionRoutes } from '../modules/TermsAndConditions/termsAndConditions.route';
 import { UserRoutes } from '../modules/User/user.route';
+import { CallRoutes } from '../modules/call/call.routes';
 
 const router = Router();
 
@@ -42,6 +43,7 @@ const routes = [
   { path: '/terms-and-conditions', route: TermsAndConditionRoutes },
   { path: '/privacy-policy', route: PrivacyPolicyRoutes },
   { path: '/sic-guidelines', route: SicGuidelinesRoutes },
+  { path: '/call', route: CallRoutes },
 ];
 
 routes.forEach((route) => router.use(route.path, route.route));

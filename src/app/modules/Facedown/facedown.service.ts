@@ -108,7 +108,7 @@ const othersFacedownFromDB = async (id: string) => {
 };
 
 const deleteFacedownByIdFromDB = async (facedownId: string) => {
-  const existingFacedown = await Facedown.findByIdAndDelete(facedownId);
+  const existingFacedown:any = await Facedown.findByIdAndDelete(facedownId);
 
   // Handle case where no Facedown is found
   if (!existingFacedown) {
