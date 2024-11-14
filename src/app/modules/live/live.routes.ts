@@ -6,6 +6,7 @@ import { LiveController } from './live.controller';
 const router = Router();
 
 // Route to generate Agora token, accessible only by authenticated users
+router.get('/:id', validateAuth(USER_ROLE.USER), LiveController.getLiveById);
 router.post(
   '/',
   validateAuth(USER_ROLE.USER),

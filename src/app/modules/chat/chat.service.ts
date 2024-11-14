@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { JwtPayload } from 'jsonwebtoken';
+import { Live } from '../live/live.modal';
 import { Message } from '../message/message.model';
 import { Chat } from './chat.model';
 
@@ -12,6 +13,7 @@ const createChatToDB = async (payload: any) => {
       return isExistChat;
     }
   }
+
   const conversation: any = await Chat.create({ participants, type, facedown });
   return conversation;
 };
@@ -52,10 +54,11 @@ const chatListFromDB = async (user: JwtPayload) => {
 };
 
 const publicChatListFromDB = async () => {
-  const chatId = await Message.distinct('chatId');
+  const messageChatId = await Message.distinct('chatId');
+  const liveChatId = await Live.distinct('chat');
 
   const chat = await Chat.find({
-    _id: { $in: chatId },
+    _id: { $in: [...messageChatId, ...liveChatId] }, // Combine both arrays for the $in query
     type: 'public',
   }).populate([
     { path: 'participants', select: 'fullName avatar' },

@@ -1,6 +1,7 @@
 import { RtcRole, RtcTokenBuilder } from 'agora-token';
 
 import config from '../config';
+import { generateNumericUID } from './generateNumericUID';
 
 const appID = config.agora.app_id as string;
 const appCertificate = config.agora.app_certificate as string;
@@ -12,12 +13,12 @@ const generateAgoraToken = (
 ): string => {
   try {
     const channelName = chatId;
-    const uid = userId;
+    const uid = generateNumericUID(userId);
 
     // Debugging: Log inputs to ensure they are correct
-    console.log('Channel Name:', channelName);
-    console.log('Role:', role);
-    console.log('UID:', uid);
+    // console.log('Channel Name:', channelName);
+    // console.log('Role:', role);
+    // console.log('UID:', uid);
 
     if (!channelName) {
       throw new Error('Room or Channel does not exist');
@@ -48,7 +49,7 @@ const generateAgoraToken = (
 
     return token;
   } catch (error) {
-    console.error('Error generating Agora token:', error);
+    // console.error('Error generating Agora token:', error);
     throw new Error('Failed to generate Agora token');
   }
 };

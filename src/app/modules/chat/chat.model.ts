@@ -1,25 +1,30 @@
-import { model, Schema } from 'mongoose'
-import { IChat } from './chat.interface'
+import { Schema, model } from 'mongoose';
+
+import { IChat } from './chat.interface';
 
 const chatSchema = new Schema<IChat>(
   {
     participants: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'User'
-      }
+        ref: 'User',
+      },
     ],
-    type:{
+    type: {
       type: String,
-      enum: ["public", "private"],
-      default: "private"
+      enum: ['public', 'private'],
+      default: 'private',
     },
-    facedown:{
+    facedown: {
       type: Schema.Types.ObjectId,
-      ref: 'Facedown'
-    } 
+      ref: 'Facedown',
+    },
+    live: {
+      type: Schema.Types.ObjectId,
+      ref: 'Live',
+    },
   },
   { timestamps: true },
-)
+);
 
-export const Chat = model<IChat>('Chat', chatSchema)
+export const Chat = model<IChat>('Chat', chatSchema);

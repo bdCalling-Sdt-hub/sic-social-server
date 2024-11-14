@@ -1,8 +1,27 @@
 import generateAgoraToken from '../../helpers/generateAgoraToken';
+import { generateNumericUID } from '../../helpers/generateNumericUID';
+import { Chat } from '../chat/chat.model';
 import { Live } from './live.modal';
+
+const getToLiveBd = async (liveId: string) => {
+  const liveChat = await Live.findById(liveId).populate([
+    { path: 'activeUsers.user', select: 'fullName avatar' },
+    // { path: 'host', select: 'fullName' }, // Example of populating the host field as well
+  ]);
+
+  // console.log(updateLiveId);
+
+  return liveChat || {};
+};
 const addLiveToDB = async (chatId: string, role: string, userId: string) => {
   const token = generateAgoraToken(chatId, role, userId);
 
+  const existChat = Chat.findOne({ _id: chatId });
+
+  if (!existChat) {
+    throw new Error('Chat does not exist');
+  }
+  // Check if a live chat with the same chatId already exists
   let liveChat = await Live.findOne({ chat: chatId });
   if (!liveChat) {
     liveChat = await Live.create({
@@ -11,15 +30,24 @@ const addLiveToDB = async (chatId: string, role: string, userId: string) => {
       activeUsers: [
         {
           user: userId,
+          uid: generateNumericUID(userId),
           joinTime: new Date(),
           role,
           token,
         },
       ],
     });
+    await Chat.findOneAndUpdate(
+      { _id: chatId },
+      { $set: { live: liveChat._id } },
+    );
+
+    // console.log(updateLiveId);
+
     return liveChat;
   } else {
-    throw new Error('Live chat with this chatId already exists');
+    // send error response
+    throw new Error('Live chat already exists');
   }
 };
 
@@ -38,19 +66,45 @@ const liveJoin = async (chatId: string, role: string, userId: string) => {
 
   let token;
   if (tokenStillValid) {
+    // Token is still valid, use the existing one
     token = existingUser.token;
   } else {
+    // Generate a new token
     token = generateAgoraToken(chatId, role, userId);
 
-    await Live.updateOne(
-      { chat: chatId },
-      {
-        $addToSet: {
-          activeUsers: { user: userId, joinTime: new Date(), role, token },
+    console.log(generateNumericUID(userId));
+    console.log(generateNumericUID(userId));
+    console.log(generateNumericUID(userId));
+
+    if (existingUser) {
+      // User exists but the token has expired, update only the token and joinTime
+      await Live.updateOne(
+        { chat: chatId, 'activeUsers.user': userId },
+        {
+          $set: {
+            'activeUsers.$.token': token,
+            'activeUsers.$.joinTime': new Date(),
+          },
         },
-      },
-      { upsert: true },
-    );
+      );
+    } else {
+      // User does not exist in activeUsers, add a new entry
+      await Live.updateOne(
+        { chat: chatId },
+        {
+          $addToSet: {
+            activeUsers: {
+              user: userId,
+              uid: generateNumericUID(userId),
+              joinTime: new Date(),
+              role,
+              token,
+            },
+          },
+        },
+        { upsert: true },
+      );
+    }
   }
 
   return token;
@@ -91,6 +145,7 @@ const updateRole = async (chatId: string, newRole: string, userId: string) => {
 };
 
 export const LiveServices = {
+  getToLiveBd,
   addLiveToDB,
   liveJoin,
   updateRole,

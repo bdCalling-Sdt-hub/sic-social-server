@@ -3,6 +3,26 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { LiveServices } from './live.service';
 
+const getLiveById = catchAsync(async (req, res) => {
+  // Check that role and chatId are provided
+  if (!req?.params?.id) {
+    return sendResponse(res, {
+      statusCode: httpStatus.BAD_REQUEST,
+      success: false,
+      message: 'live not found',
+    });
+  }
+
+  const liveChat = await LiveServices.getToLiveBd(req?.params?.id);
+
+  // Send response with the generated token
+  return sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Live chat created successfully',
+    data: liveChat,
+  });
+});
 const createNewLive = catchAsync(async (req, res) => {
   const { role, chatId } = req.body;
 
@@ -73,6 +93,7 @@ const givePermissionRole = catchAsync(async (req, res) => {
 });
 
 export const LiveController = {
+  getLiveById,
   createNewLive,
   checkAndRegenerateToken,
   givePermissionRole,

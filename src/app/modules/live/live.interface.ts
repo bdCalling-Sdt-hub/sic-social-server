@@ -7,6 +7,8 @@ export interface ILive {
     {
       user: ObjectId;
       joinTime: Date;
+      uid: number;
+      role: string;
       token: string;
     },
   ];

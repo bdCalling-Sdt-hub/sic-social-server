@@ -20,6 +20,7 @@ const memberSchema = new Schema<ILive>({
         ref: 'User', // Reference to the 'User' model
         required: true,
       },
+      uid: Number,
       role: {
         type: String,
         enum: ['audience', 'host'], // Define allowed roles
