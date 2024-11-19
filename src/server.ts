@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { errorLogger, logger } from './app/utils/winstonLogger';
@@ -43,6 +44,7 @@ async function main() {
     });
 
     socketHelper.socket(io);
+    //@ts-ignore
     global.io = io;
   } catch (error) {
     errorLogger.error(
