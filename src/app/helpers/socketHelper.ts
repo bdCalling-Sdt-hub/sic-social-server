@@ -1,8 +1,8 @@
-import colors from 'colors';
-import mongoose from 'mongoose';
-import { Server } from 'socket.io';
 import { Friend } from '../modules/Friend/friend.model';
+import { Server } from 'socket.io';
+import colors from 'colors';
 import { logger } from '../utils/winstonLogger';
+import mongoose from 'mongoose';
 
 const activeUsers = new Map<string, string>();
 
@@ -90,8 +90,8 @@ const socket = (io: Server) => {
 
         // Log active friends for debugging
         // console.log(activeFriends);
-
         // Send the list of active friends back to the client
+        // socket.to(socket.id).emit('activeFriends', activeFriends);
         socket.emit('activeFriends', activeFriends);
       } catch (error) {
         logger.error('Failed to fetch active users:', error);

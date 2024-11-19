@@ -1,7 +1,7 @@
-import { Router } from 'express';
-import validateAuth from '../../middlewares/validateAuth';
-import { USER_ROLE } from '../User/user.constant';
 import { LiveController } from './live.controller';
+import { Router } from 'express';
+import { USER_ROLE } from '../User/user.constant';
+import validateAuth from '../../middlewares/validateAuth';
 
 const router = Router();
 
@@ -17,10 +17,12 @@ router.post(
   validateAuth(USER_ROLE.USER),
   LiveController.createNewLive,
 );
-router.post(
-  '/permission',
+router.post('/permission', LiveController.givePermissionRole);
+router.post('/request', LiveController.requestRole);
+router.patch(
+  '/remove',
   validateAuth(USER_ROLE.USER),
-  LiveController.givePermissionRole,
+  LiveController.removeUser,
 );
 
 export const LiveRoutes = router;
