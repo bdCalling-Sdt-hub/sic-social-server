@@ -1,37 +1,57 @@
-import { RtcTokenBuilder, RtcRole } from 'agora-token';
+import { RtcRole, RtcTokenBuilder } from 'agora-token';
+
 import config from '../config';
+import { generateNumericUID } from './generateNumericUID';
 
-const generateAgoraToken = (channelName: string, startTime: string | Date, duration: number): string | undefined => {
-    try {
-        const appID = config.agora.app_id as string;
-        const appCertificate = config.agora.app_certificate as string;
-        const uid = 0; // Use UID from query parameter or default to 0
-        const role = RtcRole.PUBLISHER; // Role of the user (publisher, subscriber)
+const appID = config.agora.app_id as string;
+const appCertificate = config.agora.app_certificate as string;
 
-        const expirationTimeInSeconds = duration * 60; // Token expiration time in seconds
+const generateAgoraToken = (
+  chatId: string,
+  role: string,
+  userId: string,
+): string => {
+  try {
+    const channelName = chatId;
+    const uid = generateNumericUID(userId);
 
-        // Convert startTime to a timestamp in seconds (ensure it is in UTC)
-        const currentTimestamp = Math.floor(new Date(startTime).getTime() / 1000);
-        const tokenExpireTs = currentTimestamp + expirationTimeInSeconds; // Token expiration time
-        const privilegeExpireTs = tokenExpireTs; // Same expiration time for privileges (you can adjust if needed)
+    // Debugging: Log inputs to ensure they are correct
+    // console.log('Channel Name:', channelName);
+    // console.log('Role:', role);
+    // console.log('UID:', uid);
 
-        // Build token
-        const token = RtcTokenBuilder.buildTokenWithUid(
-            appID,
-            appCertificate,
-            channelName,
-            uid,
-            role,
-            tokenExpireTs,
-            privilegeExpireTs
-        );
-
-        return token;
+    if (!channelName) {
+      throw new Error('Room or Channel does not exist');
     }
-    catch (error) {
-        console.error('Error generating Agora token:', error);
-        throw new Error('Failed to generate Agora token');
+    if (!role) {
+      throw new Error('Role does not exist');
     }
+
+    // Determine Agora role
+    const agoraRole = role === 'host' ? RtcRole.PUBLISHER : RtcRole.SUBSCRIBER;
+
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    const tokenExpirationTime = 3600; // Token valid for 1 hour
+    const privilegeExpirationTime = 3600; // Privilege valid for 1 hour
+    const tokenExpireTimestamp = currentTimestamp + tokenExpirationTime;
+    const privilegeExpireTimestamp = currentTimestamp + privilegeExpirationTime;
+
+    // Build the Agora token
+    const token = RtcTokenBuilder.buildTokenWithUid(
+      appID,
+      appCertificate,
+      channelName,
+      uid,
+      agoraRole,
+      tokenExpireTimestamp,
+      privilegeExpireTimestamp,
+    );
+
+    return token;
+  } catch (error) {
+    // console.error('Error generating Agora token:', error);
+    throw new Error('Failed to generate Agora token');
+  }
 };
 
 export default generateAgoraToken;

@@ -10,7 +10,7 @@ import config from './app/config';
 import seedSuperAdmin from './app/DB';
 import { socketHelper } from './app/helpers/socketHelper';
 
-let server:any;
+let server: any;
 
 async function main() {
   try {
@@ -44,8 +44,6 @@ async function main() {
 
     socketHelper.socket(io);
     global.io = io;
-
-
   } catch (error) {
     errorLogger.error(
       colors.bgCyan.bold(`❌ MongoDB connection error: ${error}`),

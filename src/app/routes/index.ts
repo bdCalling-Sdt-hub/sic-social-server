@@ -1,3 +1,4 @@
+import { Router } from 'express';
 import { AboutSicRoutes } from '../modules/AboutSic/aboutSic.route';
 import { AuthRoutes } from '../modules/Auth/auth.route';
 import { BookRoutes } from '../modules/Book/book.route';
@@ -9,14 +10,13 @@ import { FacedownRoutes } from '../modules/Facedown/facedown.route';
 import { FaqRoutes } from '../modules/FAQ/faq.route';
 import { FeedbackRoutes } from '../modules/Feedback/feedback.route';
 import { FriendRoutes } from '../modules/Friend/friend.route';
+import { LiveRoutes } from '../modules/live/live.routes';
 import { MessageRoutes } from '../modules/message/message.route';
 import { PaymentRoutes } from '../modules/Payment/payment.route';
 import { PrivacyPolicyRoutes } from '../modules/PrivacyPolicy/privacyPolicy.route';
-import { Router } from 'express';
 import { SicGuidelinesRoutes } from '../modules/SicGuidelines/sicGuidelines.route';
 import { TermsAndConditionRoutes } from '../modules/TermsAndConditions/termsAndConditions.route';
 import { UserRoutes } from '../modules/User/user.route';
-import { CallRoutes } from '../modules/call/call.routes';
 
 const router = Router();
 
@@ -43,7 +43,7 @@ const routes = [
   { path: '/terms-and-conditions', route: TermsAndConditionRoutes },
   { path: '/privacy-policy', route: PrivacyPolicyRoutes },
   { path: '/sic-guidelines', route: SicGuidelinesRoutes },
-  { path: '/call', route: CallRoutes },
+  { path: '/live', route: LiveRoutes },
 ];
 
 routes.forEach((route) => router.use(route.path, route.route));
