@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import httpStatus from 'http-status';
 import { JwtPayload } from 'jsonwebtoken';
+import mongoose from 'mongoose';
+import ApiError from '../../errors/ApiError';
 import { Live } from '../live/live.modal';
 import { Message } from '../message/message.model';
 import { Chat } from './chat.model';
-import mongoose from 'mongoose';
-import httpStatus from 'http-status';
-import ApiError from '../../errors/ApiError';
 
 const createChatToDB = async (payload: any) => {
   const { participants, type, facedown } = payload;
@@ -111,21 +111,20 @@ const addMemberToDB = async (id: string, payload: any) => {
   return;
 };
 
-const chatParticipantsFromDB = async (user:JwtPayload, id: string) => {
-
-  if(!mongoose.Types.ObjectId.isValid(id)){
-    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Id")
+const chatParticipantsFromDB = async (user: JwtPayload, id: string) => {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid Id');
   }
 
-  const participants = await Chat.findById(id).populate({
-    path : "participants",
-    select: "fullName avatar",
-    match: {
-      _id: { $ne: user.userId },
-    }
-  });
+  const participants = await Chat.findById(id)
+    .populate({
+      path: 'participants',
+      select: 'fullName avatar',
+      match: { _id: { $ne: user.userId } },
+    })
+    .select('participants');
 
-  return participants;
+  return participants?.participants;
 };
 
 export const ChatService = {
@@ -133,5 +132,5 @@ export const ChatService = {
   chatListFromDB,
   publicChatListFromDB,
   addMemberToDB,
-  chatParticipantsFromDB
+  chatParticipantsFromDB,
 };

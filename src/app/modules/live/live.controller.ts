@@ -1,7 +1,7 @@
-import { LiveServices } from './live.service';
-import catchAsync from '../../utils/catchAsync';
 import httpStatus from 'http-status';
+import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
+import { LiveServices } from './live.service';
 
 const getLiveById = catchAsync(async (req, res) => {
   // Check that role and chatId are provided
@@ -24,20 +24,22 @@ const getLiveById = catchAsync(async (req, res) => {
   });
 });
 const createNewLive = catchAsync(async (req, res) => {
-  const { role, chatId } = req.body;
+  const { role, chatId, book, name } = req.body;
 
   // Check that role and chatId are provided
-  if (!role || !chatId) {
+  if (!role || !chatId || !book) {
     return sendResponse(res, {
       statusCode: httpStatus.BAD_REQUEST,
       success: false,
-      message: 'Role and chatId are required',
+      message: 'Role and chatId or Book are required',
     });
   }
 
   const liveChat = await LiveServices.addLiveToDB(
     chatId,
     role,
+    book,
+    name,
     req.user.userId,
   );
 
@@ -131,6 +133,16 @@ const removeUser = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const liveUpdate = catchAsync(async (req, res) => {
+  const result = await LiveServices.updateLiveDB(req.body, req.user.userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Token generated successfully',
+    data: result,
+  });
+});
 
 export const LiveController = {
   getLiveById,
@@ -139,4 +151,5 @@ export const LiveController = {
   givePermissionRole,
   requestRole,
   removeUser,
+  liveUpdate,
 };

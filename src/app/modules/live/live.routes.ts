@@ -1,7 +1,7 @@
-import { LiveController } from './live.controller';
 import { Router } from 'express';
-import { USER_ROLE } from '../User/user.constant';
 import validateAuth from '../../middlewares/validateAuth';
+import { USER_ROLE } from '../User/user.constant';
+import { LiveController } from './live.controller';
 
 const router = Router();
 
@@ -17,6 +17,7 @@ router.post(
   validateAuth(USER_ROLE.USER),
   LiveController.createNewLive,
 );
+router.post('/update', validateAuth(USER_ROLE.USER), LiveController.liveUpdate);
 router.post('/permission', LiveController.givePermissionRole);
 router.post('/request', LiveController.requestRole);
 router.patch(

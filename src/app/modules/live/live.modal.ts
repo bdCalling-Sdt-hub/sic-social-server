@@ -8,9 +8,18 @@ const memberSchema = new Schema<ILive>({
     type: Schema.Types.ObjectId,
     required: true,
   },
-  host: {
+  book: {
+    ref: 'Book',
+    type: Schema.Types.ObjectId,
+    required: true,
+  },
+  createBy: {
     ref: 'User',
     type: Schema.Types.ObjectId,
+    required: true,
+  },
+  name: {
+    type: String,
     required: true,
   },
   activeUsers: [
