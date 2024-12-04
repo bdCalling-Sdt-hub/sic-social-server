@@ -3,7 +3,7 @@ import ApiError from '../errors/ApiError';
 import httpStatus from 'http-status';
 
 // whitelist of allowed origins for CORS
-const whitelist = ['http://localhost:3000', 'http://localhost:5173'];
+const whitelist = ['http://146.190.126.8:4173'];
 
 // CORS options to allow requests only from whitelisted origins
 const corsConfig: CorsOptions = {
