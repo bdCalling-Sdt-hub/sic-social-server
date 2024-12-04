@@ -4,6 +4,9 @@ import { JwtPayload } from 'jsonwebtoken';
 import { Live } from '../live/live.modal';
 import { Message } from '../message/message.model';
 import { Chat } from './chat.model';
+import mongoose from 'mongoose';
+import httpStatus from 'http-status';
+import ApiError from '../../errors/ApiError';
 
 const createChatToDB = async (payload: any) => {
   const { participants, type, facedown } = payload;
@@ -108,9 +111,27 @@ const addMemberToDB = async (id: string, payload: any) => {
   return;
 };
 
+const chatParticipantsFromDB = async (user:JwtPayload, id: string) => {
+
+  if(!mongoose.Types.ObjectId.isValid(id)){
+    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Id")
+  }
+
+  const participants = await Chat.findById(id).populate({
+    path : "participants",
+    select: "fullName avatar",
+    match: {
+      _id: { $ne: user.userId },
+    }
+  });
+
+  return participants;
+};
+
 export const ChatService = {
   createChatToDB,
   chatListFromDB,
   publicChatListFromDB,
   addMemberToDB,
+  chatParticipantsFromDB
 };

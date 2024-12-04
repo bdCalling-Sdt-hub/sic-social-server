@@ -7,17 +7,17 @@ import httpStatus from 'http-status';
 
 const createChat = catchAsync(async (req: Request, res: Response) => {
   const id = req.user?.userId;
-  const { participants = [], type, facedown   }: { participants: any[], type: string, facedown: string  } = req.body;
-  
+  const { participants = [], type, facedown }: { participants: any[], type: string, facedown: string } = req.body;
+
   const payload = [id, ...participants];
 
-  const data ={
+  const data = {
     participants: payload,
     type,
     facedown
   }
 
-  const result:any = await ChatService.createChatToDB(data);
+  const result: any = await ChatService.createChatToDB(data);
 
   sendResponse(res, {
     success: true,
@@ -64,6 +64,19 @@ const addMember = catchAsync(async (req: Request, res: Response) => {
 
 });
 
+const chatParticipants = catchAsync(async (req: Request, res: Response) => {
+
+  const result = await ChatService.chatParticipantsFromDB(req.user, req.params.id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Participants List Retrieved',
+    data: result
+  });
+
+});
+
 
 
 
@@ -71,5 +84,6 @@ export const ChatController = {
   createChat,
   chatListFromDB,
   publicChatList,
-  addMember
+  addMember,
+  chatParticipants
 };
