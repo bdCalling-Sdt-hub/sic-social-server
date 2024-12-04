@@ -8,7 +8,7 @@ IP_ADDRESS=192.168.12.202
 NODE_ENV=development
 
 # Database Configuration
-DATABASE_URL=mongodb://127.0.0.1:27017
+DATABASE_URL='mongodb://localhost:27017'
 COLLECTION_NAME=sic_app
 
 # Bcrypt Salt Rounds
@@ -31,3 +31,8 @@ SUPER_ADMIN_STATUS=active
 # SMTP Configuration
 SMTP_EMAIL_USER=arifbiswas1020@gmail.com
 SMTP_EMAIL_PASS=fkmn hwhw wcyf zsud
+
+# Agora Connection Config
+
+AGORA_APP_ID = "685287b131274a73a2a54d531f3190aa"
+AGORA_APP_CERTIFICATE="e5daaca140b14bdda16ba65177665083"

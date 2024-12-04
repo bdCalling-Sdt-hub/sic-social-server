@@ -53,8 +53,8 @@ const socket = (io: Server) => {
 
         const activeFriends = friends
           .filter((friend: any) => {
-            const senderId = friend.senderId._id.toString();
-            const recipientId = friend.recipientId._id.toString();
+            const senderId = friend?.senderId?._id.toString();
+            const recipientId = friend?.recipientId?._id.toString();
 
             const isSenderActive =
               senderId === userId && activeUsers.has(recipientId);
@@ -73,7 +73,7 @@ const socket = (io: Server) => {
             return isSenderActive || isRecipientActive;
           })
           .map((friend: any) => {
-            if (friend.senderId._id.toString() === userId) {
+            if (friend.senderId?._id.toString() === userId) {
               return {
                 _id: friend.recipientId._id,
                 fullName: friend.recipientId.fullName,
@@ -95,7 +95,7 @@ const socket = (io: Server) => {
         socket.emit('activeFriends', activeFriends);
       } catch (error) {
         logger.error('Failed to fetch active users:', error);
-        socket.emit('error', 'Failed to fetch active users');
+        socket.emit('error', error?.message);
       }
     });
 
