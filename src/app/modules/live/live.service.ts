@@ -84,6 +84,7 @@ const removeUserFormDB = async (chatId: string, userId: string) => {
   );
 
   const liveChat = await Live.findOne({ chat: chatId }).lean();
+  const socketIo = global.io;
 
   if (!liveChat) {
     throw new Error('Chat does not exist');
@@ -93,17 +94,23 @@ const removeUserFormDB = async (chatId: string, userId: string) => {
   if (!liveChat.activeUsers.find((user) => user.role === 'host')) {
     await Live.deleteOne({ chat: chatId });
     await Chat.deleteOne({ _id: chatId });
+    if (socketIo) {
+      socketIo.emit(`live::${chatId?.toString()}`, {
+        message: 'end',
+        end: true,
+      });
+    }
+  } else {
+    if (socketIo) {
+      socketIo.emit(`live::${chatId?.toString()}`, {
+        message: 'leave',
+        user: userId,
+      });
+    }
   }
 
   // message handling with socket
   //@ts-ignore
-  const socketIo = global.io;
-  if (socketIo) {
-    socketIo.emit(`live::${chatId?.toString()}`, {
-      message: 'leave',
-      user: userId,
-    });
-  }
 
   // Return results for debugging
   return results;
