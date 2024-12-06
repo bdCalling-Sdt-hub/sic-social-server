@@ -63,7 +63,7 @@ const updateFacedownByIdFromDB = async (
 ) => {
 
   // Update the Facedown with the provided status
-  const result = await Facedown.findByIdAndUpdate(facedownId, payload, {
+  const result = await Facedown.findByIdAndUpdate({_id: facedownId}, payload, {
     new: true, // Return the updated document
     runValidators: true,
   });
