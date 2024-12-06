@@ -25,5 +25,14 @@ router.get(
   validateAuth(USER_ROLE.USER),
   ChatController.chatParticipants,
 );
-
+router.patch(
+  '/remove/:id',
+  validateAuth(USER_ROLE.USER),
+  ChatController.removeParticipant,
+);
+router.delete(
+  '/delete/:id',
+  validateAuth(USER_ROLE.USER),
+  ChatController.deleteChat,
+);
 export const ChatRoutes = router;

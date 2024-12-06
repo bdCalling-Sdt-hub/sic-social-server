@@ -61,8 +61,6 @@ const updateFacedownByIdFromDB = async (
   facedownId: string,
   payload: Partial<IFacedown>,
 ) => {
-  // Remove the createdBy field from the payload
-  delete payload.createdBy;
 
   // Update the Facedown with the provided status
   const result = await Facedown.findByIdAndUpdate(facedownId, payload, {

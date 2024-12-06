@@ -77,6 +77,32 @@ const chatParticipants = catchAsync(async (req: Request, res: Response) => {
 
 });
 
+const removeParticipant = catchAsync(async (req: Request, res: Response) => {
+
+  const result = await ChatService.removeMemberToDB(req.params.id, req.body.participantId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Remove Participant from chat ',
+    data: result
+  });
+
+});
+
+const deleteChat = catchAsync(async (req: Request, res: Response) => {
+
+  const result = await ChatService.deleteChatsToDB(req.params.id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Chat Deleted Successfully',
+    data: result
+  });
+
+});
+
 
 
 
@@ -85,5 +111,7 @@ export const ChatController = {
   chatListFromDB,
   publicChatList,
   addMember,
-  chatParticipants
+  chatParticipants,
+  removeParticipant,
+  deleteChat
 };
