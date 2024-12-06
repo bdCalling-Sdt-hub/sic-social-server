@@ -9,5 +9,7 @@ router.get('/chat-list',validateAuth(USER_ROLE.USER), ChatController.chatListFro
 router.get('/news-feed',validateAuth(USER_ROLE.USER), ChatController.publicChatList)
 router.patch('/update-conversation/:id',validateAuth(USER_ROLE.USER), ChatController.addMember);
 router.patch('/participants/:id', validateAuth(USER_ROLE.USER), ChatController.chatParticipants);
+router.patch('/remove/:id', validateAuth(USER_ROLE.USER), ChatController.removeParticipant);
+router.delete('/delete/:id', validateAuth(USER_ROLE.USER), ChatController.deleteChat);
 
 export const ChatRoutes = router;
