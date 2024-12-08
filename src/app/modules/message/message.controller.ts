@@ -41,7 +41,7 @@ const sendMessage = catchAsync(async (req: Request, res: Response) => {
       const fullPath = path.join(UPLOADS_BASE_DIR, audioFilePath);
       const transcription = await voiceToText(fullPath);
       messageData.text = transcription;
-      console.log(transcription);
+      // console.log(transcription);
       messageData.messageType = 'both';
     } catch (error: any) {
       return res.status(500).json({ error: error });

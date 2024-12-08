@@ -7,8 +7,7 @@ import {
 
 // Helper function to determine the upload directory and folder based on fieldname
 const getUploadFolder = (fieldname: string) => {
-
-  console.log({fieldname})
+  // console.log({fieldname})
   if (IMAGE_FIELD_NAMES?.includes(fieldname)) {
     return 'images';
   } else if (VIDEO_FIELD_NAMES?.includes(fieldname)) {
