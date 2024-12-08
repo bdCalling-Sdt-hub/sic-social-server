@@ -37,6 +37,7 @@ const memberSchema = new Schema<ILive>({
       },
       joinTime: Date,
       token: String,
+      isMute: Boolean,
     },
   ],
 });

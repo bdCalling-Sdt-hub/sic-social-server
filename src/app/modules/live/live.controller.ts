@@ -143,6 +143,29 @@ const liveUpdate = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const ToggleMute = catchAsync(async (req, res) => {
+  const { chatId } = req.query;
+
+  if (!chatId) {
+    return sendResponse(res, {
+      statusCode: httpStatus.BAD_REQUEST,
+      success: false,
+      message: 'chatId are required',
+    });
+  }
+
+  const result = await LiveServices.updateMicrophone(
+    chatId as string,
+    req.user.userId,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Token generated successfully',
+    data: result,
+  });
+});
 
 export const LiveController = {
   getLiveById,
@@ -152,4 +175,5 @@ export const LiveController = {
   requestRole,
   removeUser,
   liveUpdate,
+  ToggleMute,
 };
