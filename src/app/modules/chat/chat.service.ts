@@ -27,10 +27,11 @@ const chatListFromDB = async (user: JwtPayload) => {
       $in: user?.userId,
     },
     type: 'private',
-  }).populate({
-    path: 'participants',
-    select: 'fullName avatar',
-  });
+  }).populate([
+    { path: 'participants', select: 'fullName avatar' },
+    { path: 'facedown', select: 'name image' },
+    { path: 'live', select: 'name image' },
+  ]);
 
   //Use Promise.all to handle the asynchronous operations inside the map
   const filters = await Promise.all(
@@ -66,6 +67,7 @@ const publicChatListFromDB = async () => {
   }).populate([
     { path: 'participants', select: 'fullName avatar' },
     { path: 'facedown', select: 'name image' },
+    { path: 'live', select: 'name image' },
   ]);
 
   //Use Promise.all to handle the asynchronous operations inside the map
@@ -121,6 +123,8 @@ const removeMemberToDB = async (id: string, participantId: string) => {
     { $pull: { participants: participantId } }, // Use $pull to remove the participant
     { new: true }, // Return the updated document
   );
+
+  // console.log(chat);
 
   if (!chat) {
     throw new ApiError(

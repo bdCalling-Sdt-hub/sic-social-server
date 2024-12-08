@@ -61,13 +61,17 @@ const updateFacedownByIdFromDB = async (
   facedownId: string,
   payload: Partial<IFacedown>,
 ) => {
-
+  // console.log(payload);
   // Update the Facedown with the provided status
-  const result = await Facedown.findByIdAndUpdate({_id: facedownId}, payload, {
-    new: true, // Return the updated document
-    runValidators: true,
-  });
-
+  const result = await Facedown.findByIdAndUpdate(
+    { _id: facedownId },
+    payload,
+    {
+      new: true, // Return the updated document
+      runValidators: true,
+    },
+  );
+  // console.log(result);
   // Handle case where no Facedown is found
   if (!result) {
     throw new ApiError(
@@ -106,7 +110,7 @@ const othersFacedownFromDB = async (id: string) => {
 };
 
 const deleteFacedownByIdFromDB = async (facedownId: string) => {
-  const existingFacedown:any = await Facedown.findByIdAndDelete(facedownId);
+  const existingFacedown: any = await Facedown.findByIdAndDelete(facedownId);
 
   // Handle case where no Facedown is found
   if (!existingFacedown) {

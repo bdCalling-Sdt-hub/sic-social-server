@@ -42,6 +42,8 @@ const getFacedownById = catchAsync(async (req, res) => {
 });
 
 const updateFacedownById = catchAsync(async (req, res) => {
+  console.log(req?.body);
+
   const result = await FacedownServices.updateFacedownByIdFromDB(
     req?.params?.facedownId,
     req?.body,

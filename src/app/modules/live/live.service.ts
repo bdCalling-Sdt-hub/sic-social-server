@@ -37,9 +37,12 @@ const addLiveToDB = async (
     throw new Error('Chat does not exist');
   }
   // Check if a live chat with the same chatId already exists
-  let liveChat = await Live.findOne({ chat: chatId });
-  if (!liveChat) {
-    liveChat = await Live.create({
+  const liveChat = await Live.findOne({ chat: chatId }).lean();
+
+  if (liveChat?._id) {
+    return liveChat;
+  } else {
+    const newLive = await Live.create({
       chat: chatId,
       createBy: userId,
       book: book,
@@ -56,15 +59,12 @@ const addLiveToDB = async (
     });
     await Chat.findOneAndUpdate(
       { _id: chatId },
-      { $set: { live: liveChat._id } },
+      { $set: { live: newLive._id } },
     );
 
     // console.log(updateLiveId);
 
-    return liveChat;
-  } else {
-    // send error response
-    throw new Error('Live chat already exists');
+    return newLive;
   }
 };
 const removeUserFormDB = async (chatId: string, userId: string) => {

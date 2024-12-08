@@ -24,8 +24,8 @@ router
 
   .patch(
     upload.fields([{ name: 'image', maxCount: 1 }]),
-    validateAuth(USER_ROLE.USER), 
-    FacedownControllers.updateFacedownById
+    validateAuth(USER_ROLE.USER),
+    FacedownControllers.updateFacedownById,
   )
   .delete(validateAuth(USER_ROLE.USER), FacedownControllers.deleteFacedownById)
   .get(FacedownControllers.getFacedownById);

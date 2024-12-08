@@ -1,21 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
-import { ChatService } from './chat.service';
+
+import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
-import httpStatus from 'http-status';
+import { ChatService } from './chat.service';
 
 const createChat = catchAsync(async (req: Request, res: Response) => {
   const id = req.user?.userId;
-  const { participants = [], type, facedown }: { participants: any[], type: string, facedown: string } = req.body;
+  const {
+    participants = [],
+    type,
+    facedown,
+  }: { participants: any[]; type: string; facedown: string } = req.body;
 
   const payload = [id, ...participants];
 
   const data = {
     participants: payload,
     type,
-    facedown
-  }
+    facedown,
+  };
 
   const result: any = await ChatService.createChatToDB(data);
 
@@ -51,7 +56,6 @@ const publicChatList = catchAsync(async (req: Request, res: Response) => {
 });
 
 const addMember = catchAsync(async (req: Request, res: Response) => {
-
   const id = req.params.id;
   const payload = req.body.participants;
   await ChatService.addMemberToDB(id, payload);
@@ -59,52 +63,48 @@ const addMember = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: 'Added member to the public chat'
+    message: 'Added member to the public chat',
   });
-
 });
 
 const chatParticipants = catchAsync(async (req: Request, res: Response) => {
-
-  const result = await ChatService.chatParticipantsFromDB(req.user, req.params.id);
+  const result = await ChatService.chatParticipantsFromDB(
+    req.user,
+    req.params.id,
+  );
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: 'Participants List Retrieved',
-    data: result
+    data: result,
   });
-
 });
 
 const removeParticipant = catchAsync(async (req: Request, res: Response) => {
-
-  const result = await ChatService.removeMemberToDB(req.params.id, req.body.participantId);
+  const result = await ChatService.removeMemberToDB(
+    req.params.id,
+    req.body.participantId,
+  );
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: 'Remove Participant from chat ',
-    data: result
+    data: result,
   });
-
 });
 
 const deleteChat = catchAsync(async (req: Request, res: Response) => {
-
   const result = await ChatService.deleteChatsToDB(req.params.id);
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: 'Chat Deleted Successfully',
-    data: result
+    data: result,
   });
-
 });
-
-
-
 
 export const ChatController = {
   createChat,
@@ -113,5 +113,5 @@ export const ChatController = {
   addMember,
   chatParticipants,
   removeParticipant,
-  deleteChat
+  deleteChat,
 };

@@ -3,7 +3,7 @@ import fs from 'fs';
 import speech from '@google-cloud/speech';
 
 const client = new speech.SpeechClient({
-  keyFilename: './googleCloudConfigaration.json',
+  keyFilename: "./googleCloudConfigaration.json",
 });
 
 export const voiceToText = async (

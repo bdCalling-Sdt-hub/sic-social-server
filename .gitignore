@@ -18,6 +18,12 @@ winston/
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
+googleCloudConfigaration.json/
+googleCloudConfiguration.json
+
+/*.json
+*.json
+.json
 # Runtime data
 pids
 *.pid
@@ -39,6 +45,10 @@ coverage
 
 # Bower dependency directory (https://bower.io/)
 bower_components
+
+googleCloudConfigaration.json
+
+*.json
 
 # node-waf configuration
 .lock-wscript
@@ -147,3 +157,4 @@ dist
 
 # End of https://www.toptal.com/developers/gitignore/api/node
 .vercel
+googleCloudConfiguration.json
