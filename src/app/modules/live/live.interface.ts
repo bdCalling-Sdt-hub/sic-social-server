@@ -2,7 +2,9 @@ import { ObjectId } from 'mongoose';
 
 export interface ILive {
   chat: ObjectId;
-  host: ObjectId;
+  createBy: ObjectId;
+  book: ObjectId;
+  name: string;
   activeUsers: [
     {
       user: ObjectId;

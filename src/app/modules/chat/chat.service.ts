@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import httpStatus from 'http-status';
 import { JwtPayload } from 'jsonwebtoken';
+import mongoose from 'mongoose';
+import ApiError from '../../errors/ApiError';
 import { Live } from '../live/live.modal';
 import { Message } from '../message/message.model';
 import { Chat } from './chat.model';
-import mongoose from 'mongoose';
-import httpStatus from 'http-status';
-import ApiError from '../../errors/ApiError';
 
 const createChatToDB = async (payload: any) => {
   const { participants, type, facedown } = payload;
@@ -112,61 +112,64 @@ const addMemberToDB = async (id: string, payload: any) => {
 };
 
 const removeMemberToDB = async (id: string, participantId: string) => {
-
-  if(!mongoose.Types.ObjectId.isValid(id)){
-    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Participants ID");
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid Participants ID');
   }
 
   const chat = await Chat.findByIdAndUpdate(
     id,
     { $pull: { participants: participantId } }, // Use $pull to remove the participant
-    { new: true } // Return the updated document
+    { new: true }, // Return the updated document
   );
 
-
   if (!chat) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Failed to Remove Participants from the chat");
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Failed to Remove Participants from the chat',
+    );
   }
 
   return;
 };
 
-
-const chatParticipantsFromDB = async (user:JwtPayload, id: string) => {
-
-  if(!mongoose.Types.ObjectId.isValid(id)){
-    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Id")
+const chatParticipantsFromDB = async (user: JwtPayload, id: string) => {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid Id');
   }
 
-  const participants = await Chat.findById(id).populate({
-    path : "participants",
-    select: "fullName avatar",
-    match: {
-      _id: { $ne: user.userId },
-    }
-  });
+  const participants = await Chat.findById(id)
+    .populate({
+      path: 'participants',
+      select: 'fullName avatar',
+      match: { _id: { $ne: user.userId } },
+    })
+    .select('participants');
 
-  return participants;
+  return participants?.participants;
 };
 
 const deleteChatsToDB = async (id: string) => {
-
-  if(!mongoose.Types.ObjectId.isValid(id)){
-    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Id")
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid Id');
   }
 
-  const deleteMessage = await Message.deleteMany({chatId: id});
-  if(!deleteMessage){
-    throw new ApiError(httpStatus.BAD_REQUEST, "Failed to Delete All message by this Chat Id")
+  const deleteMessage = await Message.deleteMany({ chatId: id });
+  if (!deleteMessage) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Failed to Delete All message by this Chat Id',
+    );
   }
 
   const deleteChat = await Chat.findByIdAndDelete(id);
-  if(!deleteChat){
-    throw new ApiError(httpStatus.BAD_REQUEST, "Failed to Delete All message by this Chat Id")
+  if (!deleteChat) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Failed to Delete All message by this Chat Id',
+    );
   }
 
   return;
-  
 };
 
 export const ChatService = {
@@ -176,5 +179,5 @@ export const ChatService = {
   addMemberToDB,
   chatParticipantsFromDB,
   removeMemberToDB,
-  deleteChatsToDB
+  deleteChatsToDB,
 };

@@ -1,25 +1,37 @@
+import generateAgoraToken from '../../helpers/generateAgoraToken';
+import { generateNumericUID } from '../../helpers/generateNumericUID';
+import { Chat } from '../chat/chat.model';
+import { Live } from './live.modal';
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Chat } from '../chat/chat.model';
-import { Live } from './live.modal';
-import generateAgoraToken from '../../helpers/generateAgoraToken';
-import { generateNumericUID } from '../../helpers/generateNumericUID';
-
 const getToLiveBd = async (liveId: string) => {
-  const liveChat = await Live.findById(liveId).populate([
-    { path: 'activeUsers.user', select: 'fullName avatar' },
-    // { path: 'host', select: 'fullName' }, // Example of populating the host field as well
-  ]);
+  const liveChat = await Live.findById(liveId)
+    .populate([
+      { path: 'activeUsers.user', select: 'fullName avatar' },
+      // { path: 'host', select: 'fullName' }, // Example of populating the host field as well
+    ])
+    .populate({
+      path: 'book',
+      select: 'name bookUrl bookImage publisher',
+    });
 
   // console.log(updateLiveId);
 
   return liveChat || {};
 };
-const addLiveToDB = async (chatId: string, role: string, userId: string) => {
+const addLiveToDB = async (
+  chatId: string,
+  role: string,
+  book: string,
+  name: string,
+  userId: string,
+) => {
   const token = generateAgoraToken(chatId, role, userId);
 
   const existChat = Chat.findOne({ _id: chatId });
+
+  // console.log(book);
 
   if (!existChat) {
     throw new Error('Chat does not exist');
@@ -29,7 +41,9 @@ const addLiveToDB = async (chatId: string, role: string, userId: string) => {
   if (!liveChat) {
     liveChat = await Live.create({
       chat: chatId,
-      host: userId,
+      createBy: userId,
+      book: book,
+      name: name,
       activeUsers: [
         {
           user: userId,
@@ -69,15 +83,34 @@ const removeUserFormDB = async (chatId: string, userId: string) => {
     },
   );
 
+  const liveChat = await Live.findOne({ chat: chatId }).lean();
+  const socketIo = global.io;
+
+  if (!liveChat) {
+    throw new Error('Chat does not exist');
+  }
+
+  // have not active users with host then remove the live chat
+  if (!liveChat.activeUsers.find((user) => user.role === 'host')) {
+    await Live.deleteOne({ chat: chatId });
+    await Chat.deleteOne({ _id: chatId });
+    if (socketIo) {
+      socketIo.emit(`live::${chatId?.toString()}`, {
+        message: 'end',
+        end: true,
+      });
+    }
+  } else {
+    if (socketIo) {
+      socketIo.emit(`live::${chatId?.toString()}`, {
+        message: 'leave',
+        user: userId,
+      });
+    }
+  }
+
   // message handling with socket
   //@ts-ignore
-  const socketIo = global.io;
-  if (socketIo) {
-    socketIo.emit(`live::${chatId?.toString()}`, {
-      message: 'leave',
-      user: userId,
-    });
-  }
 
   // Return results for debugging
   return results;
@@ -130,7 +163,7 @@ const liveJoin = async (chatId: string, userId: string) => {
               uid: generateNumericUID(userId),
               joinTime: new Date(),
               role:
-                liveChat?.host?.toString() === userId?.toString()
+                liveChat?.createBy?.toString() === userId?.toString()
                   ? 'host'
                   : 'audience',
               token,
@@ -195,6 +228,30 @@ const updateRole = async (chatId: string, newRole: string, userId: string) => {
     data: result.activeUsers[0],
   };
 };
+const updateLiveDB = async (
+  payload: { name: string; book: string; chatId: string },
+  userId: string,
+) => {
+  const result = await Live.findOneAndUpdate(
+    { chat: payload?.chatId, 'activeUsers.user': userId },
+    {
+      $set: {
+        name: payload?.name,
+        book: payload?.book,
+      },
+    },
+    { new: true }, // Return the updated document
+  ).lean();
+
+  if (!result) {
+    throw new Error('User or chat not found, or role not updated');
+  }
+
+  return {
+    message: 'Live updated successfully',
+    data: result,
+  };
+};
 const roleRequest = async (chatId: string, userId: string, message: string) => {
   // Validate role (only 'host' and 'audience' allowed)
 
@@ -212,7 +269,7 @@ const roleRequest = async (chatId: string, userId: string, message: string) => {
 
   if (message === 'request') {
     if (socketIo) {
-      socketIo.emit(`live::${result?.host?.toString()}::${chatId}`, {
+      socketIo.emit(`live::${result?.createBy?.toString()}::${chatId}`, {
         message: message,
         user: result?.activeUsers?.find(
           (user) => user.user.toString() === userId,
@@ -247,4 +304,5 @@ export const LiveServices = {
   updateRole,
   roleRequest,
   removeUserFormDB,
+  updateLiveDB,
 };
