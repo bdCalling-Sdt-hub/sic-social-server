@@ -93,8 +93,7 @@ const getUsersFromDB = async (query: Record<string, unknown>) => {
   const usersQuery = new QueryBuilder(
     User.find({
       role: 'user',
-      isVerified: true,
-    }).select('avatar fullName email presentAddress permanentAddress'),
+    }),
     query,
   )
     .search(UserSearchableFields) // Apply search conditions based on searchable fields
