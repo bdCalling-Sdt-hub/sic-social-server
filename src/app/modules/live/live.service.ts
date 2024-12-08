@@ -4,9 +4,7 @@ import { Chat } from '../chat/chat.model';
 import { Live } from './live.modal';
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-//message
-//@ts-ignore
-const socketIo = global.io;
+
 const getToLiveBd = async (liveId: string) => {
   const liveChat = await Live.findById(liveId)
     .populate([
@@ -90,7 +88,9 @@ const removeUserFormDB = async (chatId: string, userId: string) => {
   if (!liveChat) {
     throw new Error('Chat does not exist');
   }
-
+  //message
+  //@ts-ignore
+  const socketIo = global.io;
   // have not active users with host then remove the live chat
   if (!liveChat.activeUsers.find((user) => user.role === 'host')) {
     await Live.deleteOne({ chat: chatId });
@@ -176,7 +176,9 @@ const liveJoin = async (chatId: string, userId: string) => {
       );
     }
   }
-
+  //message
+  //@ts-ignore
+  const socketIo = global.io;
   if (socketIo) {
     socketIo.emit(`live::${chatId?.toString()}`, {
       message: 'join',
@@ -218,7 +220,7 @@ const updateRole = async (chatId: string, newRole: string, userId: string) => {
 
   //message
   //@ts-ignore
-
+  const socketIo = global.io;
   if (socketIo) {
     socketIo.emit(`live::${chatId?.toString()}`, result.activeUsers[0]);
   }
@@ -282,6 +284,9 @@ const updateMicrophone = async (chatId: string, userId: string) => {
       if (!result) {
         throw new Error('User or chat not found, or role not updated');
       }
+      //message
+      //@ts-ignore
+      const socketIo = global.io;
       if (socketIo) {
         socketIo.emit(`live::${chatId?.toString()}`, {
           message: 'mute',
