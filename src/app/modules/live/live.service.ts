@@ -4,7 +4,9 @@ import { Chat } from '../chat/chat.model';
 import { Live } from './live.modal';
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
+//message
+//@ts-ignore
+const socketIo = global.io;
 const getToLiveBd = async (liveId: string) => {
   const liveChat = await Live.findById(liveId)
     .populate([
@@ -84,7 +86,6 @@ const removeUserFormDB = async (chatId: string, userId: string) => {
   );
 
   const liveChat = await Live.findOne({ chat: chatId }).lean();
-  const socketIo = global.io;
 
   if (!liveChat) {
     throw new Error('Chat does not exist');
@@ -167,6 +168,7 @@ const liveJoin = async (chatId: string, userId: string) => {
                   ? 'host'
                   : 'audience',
               token,
+              isMute: false,
             },
           },
         },
@@ -174,9 +176,7 @@ const liveJoin = async (chatId: string, userId: string) => {
       );
     }
   }
-  //message
-  //@ts-ignore
-  const socketIo = global.io;
+
   if (socketIo) {
     socketIo.emit(`live::${chatId?.toString()}`, {
       message: 'join',
@@ -218,7 +218,7 @@ const updateRole = async (chatId: string, newRole: string, userId: string) => {
 
   //message
   //@ts-ignore
-  const socketIo = global.io;
+
   if (socketIo) {
     socketIo.emit(`live::${chatId?.toString()}`, result.activeUsers[0]);
   }
@@ -228,6 +228,7 @@ const updateRole = async (chatId: string, newRole: string, userId: string) => {
     data: result.activeUsers[0],
   };
 };
+
 const updateLiveDB = async (
   payload: { name: string; book: string; chatId: string },
   userId: string,
@@ -251,6 +252,47 @@ const updateLiveDB = async (
     message: 'Live updated successfully',
     data: result,
   };
+};
+const updateMicrophone = async (chatId: string, userId: string) => {
+  // Fetch the live chat to get the current state of the user
+  const liveChat = await Live.findOne({
+    chat: chatId,
+    'activeUsers.user': userId,
+  }).lean();
+
+  if (liveChat) {
+    // Find the user in the activeUsers array
+    const user = liveChat.activeUsers.find(
+      (user) => user.user.toString() === userId,
+    );
+
+    if (user) {
+      // Toggle the mute state
+      user.isMute = !user.isMute;
+
+      // Update the document with the new mute state
+      const result = await Live.findOneAndUpdate(
+        { chat: chatId, 'activeUsers.user': userId },
+        {
+          $set: { 'activeUsers.$.isMute': user.isMute },
+        },
+        { new: true },
+      ).lean();
+
+      if (!result) {
+        throw new Error('User or chat not found, or role not updated');
+      }
+      if (socketIo) {
+        socketIo.emit(`live::${chatId?.toString()}`, result.activeUsers[0]);
+      }
+      return {
+        message: 'Live updated successfully',
+        data: result,
+      };
+    }
+  }
+
+  throw new Error('User not found in the live chat');
 };
 const roleRequest = async (chatId: string, userId: string, message: string) => {
   // Validate role (only 'host' and 'audience' allowed)
@@ -305,4 +347,5 @@ export const LiveServices = {
   roleRequest,
   removeUserFormDB,
   updateLiveDB,
+  updateMicrophone,
 };

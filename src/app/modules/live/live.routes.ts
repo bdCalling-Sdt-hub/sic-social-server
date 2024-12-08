@@ -21,6 +21,11 @@ router.post('/update', validateAuth(USER_ROLE.USER), LiveController.liveUpdate);
 router.post('/permission', LiveController.givePermissionRole);
 router.post('/request', LiveController.requestRole);
 router.patch(
+  '/toggle_mute',
+  validateAuth(USER_ROLE.USER),
+  LiveController.ToggleMute,
+);
+router.patch(
   '/remove',
   validateAuth(USER_ROLE.USER),
   LiveController.removeUser,

@@ -11,6 +11,7 @@ export interface ILive {
       joinTime: Date;
       uid: number;
       role: string;
+      isMute: boolean;
       token: string;
     },
   ];
