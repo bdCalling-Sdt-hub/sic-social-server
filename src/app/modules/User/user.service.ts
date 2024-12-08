@@ -92,7 +92,7 @@ const getUsersFromDB = async (query: Record<string, unknown>) => {
   // Build the query using QueryBuilder with the given query parameters
   const usersQuery = new QueryBuilder(
     User.find({
-      role: 'user',
+      role: 'USER',
     }),
     query,
   )
