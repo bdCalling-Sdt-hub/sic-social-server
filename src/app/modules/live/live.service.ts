@@ -283,7 +283,11 @@ const updateMicrophone = async (chatId: string, userId: string) => {
         throw new Error('User or chat not found, or role not updated');
       }
       if (socketIo) {
-        socketIo.emit(`live::${chatId?.toString()}`, result.activeUsers[0]);
+        socketIo.emit(`live::${chatId?.toString()}`, {
+          message: 'mute',
+          user: userId,
+          isMute: user.isMute,
+        });
       }
       return {
         message: 'Live updated successfully',
