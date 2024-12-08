@@ -18,12 +18,12 @@ winston/
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-googleCloudConfigaration.json/
-googleCloudConfiguration.json
+# googleCloudConfigaration.json/
+# googleCloudConfiguration.json
 
-/*.json
-*.json
-.json
+# /*.json
+# *.json
+# .json
 # Runtime data
 pids
 *.pid
