@@ -6,7 +6,7 @@ import { UserServices } from './user.service';
 const createUser = catchAsync(async (req, res) => {
   // console.log(req.body);
   const result = await UserServices.createUserToDB(req?.body);
-// console.log(result);
+  // console.log(result);
   return sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -49,7 +49,7 @@ const getUsersCount = catchAsync(async (req, res) => {
 });
 
 const getAdmins = catchAsync(async (req, res) => {
-  const result = await UserServices?.getAdminsFromDB(req?.query);
+  const result = await UserServices?.getAdminsFromDB();
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
