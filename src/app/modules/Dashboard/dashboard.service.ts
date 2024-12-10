@@ -1,7 +1,8 @@
 import { endOfDay, endOfMonth, startOfDay, startOfMonth } from 'date-fns';
-import { User } from '../User/user.model';
+
 import { monthNames } from '../../constants/month.constant';
 import { Payment } from '../Payment/payment.model';
+import { User } from '../User/user.model';
 
 const getDashboardMetricsFromDB = async () => {
   // Get today's start and end dates
@@ -10,12 +11,12 @@ const getDashboardMetricsFromDB = async () => {
 
   // Get total users
   const totalUser = await User.countDocuments({
-    role: 'user',
+    role: 'USER',
     isVerified: true,
   });
 
   const todayUser = await User.countDocuments({
-    role: 'user',
+    role: 'USER',
     isVerified: true,
     createdAt: { $gte: todayStart, $lte: todayEnd },
   });

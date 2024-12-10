@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { JwtPayload } from 'jsonwebtoken';
-import { IDonation } from './donation.interface';
-import { Donation } from './donation.model';
-import ApiError from '../../errors/ApiError';
 import httpStatus from 'http-status';
+import { JwtPayload } from 'jsonwebtoken';
+import ApiError from '../../errors/ApiError';
 import { unlinkFile } from '../../helpers/fileHandler';
 import getPathAfterUploads from '../../helpers/getPathAfterUploads';
+import { IDonation } from './donation.interface';
+import { Donation } from './donation.model';
 
 const createDonationPostToDB = async (
   user: JwtPayload,
@@ -18,11 +18,12 @@ const createDonationPostToDB = async (
 
   // Check the total number of Donations in the database
   const donationCount = await Donation.countDocuments();
+  const donation = await Donation.findOne();
 
   // If the total number of Donations has reached the limit (5), throw an error
   if (donationCount >= 1) {
-    unlinkFile(file?.path); // Remove the uploaded file to clean up
-    throw new ApiError(httpStatus.CONFLICT, 'Donation creation limit reached!');
+    const result = await Donation.findByIdAndUpdate(donation?._id, payload);
+    return result;
   }
 
   if (file && file?.path) {

@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+
 import { IDonation } from './donation.interface';
 
 const donationSchema = new Schema<IDonation>(
@@ -11,29 +12,24 @@ const donationSchema = new Schema<IDonation>(
     details: {
       title: {
         type: String,
-        required: true,
       },
       image: {
         type: String,
-        required: true,
       },
       content: {
         type: String,
-        required: true,
       },
     },
 
     rulesAndRegulations: {
       content: {
         type: String,
-        required: true,
       },
     },
 
     termsAndConditions: {
       content: {
         type: String,
-        required: true,
       },
     },
   },
