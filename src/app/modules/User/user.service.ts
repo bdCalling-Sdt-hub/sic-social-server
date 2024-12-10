@@ -108,21 +108,19 @@ const getUsersFromDB = async (query: Record<string, unknown>) => {
   return { meta, result };
 };
 
-const getAdminsFromDB = async (query: Record<string, unknown>) => {
+const getAdminsFromDB = async () => {
   // Build the query using QueryBuilder with the given query parameters
-  const usersQuery = new QueryBuilder(
-    User.find({ role: 'admin' }).select('avatar fullName email'),
-    query,
-  )
-    .sort() // Apply sorting based on the query parameter
-    .paginate(); // Apply pagination based on the query parameter
+
+  const result = await User.find({ role: 'ADMIN' })
+    .select('fullName email avatar')
+    .sort({ createdAt: -1 });
 
   // Get the total count of matching documents and total pages for pagination
-  const meta = await usersQuery.countTotal();
+  // const meta = await usersQuery.countTotal();
   // Execute the query to retrieve the users
-  const result = await usersQuery.modelQuery;
+  // const result = await usersQuery.modelQuery;
 
-  return { meta, result };
+  return result;
 };
 
 const getUsersCountFromDB = async () => {
