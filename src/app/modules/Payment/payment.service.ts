@@ -1,8 +1,8 @@
 import { JwtPayload } from 'jsonwebtoken';
-import { IPayment } from './payment.interface';
-import { Payment } from './payment.model';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { UserSearchableFields } from '../User/user.constant';
+import { IPayment } from './payment.interface';
+import { Payment } from './payment.model';
 
 const savePaymentInfoToDB = async (user: JwtPayload, payload: IPayment) => {
   // Set the createdBy field to the ID of the user who is creating the Payment
@@ -16,8 +16,8 @@ const savePaymentInfoToDB = async (user: JwtPayload, payload: IPayment) => {
 const getPaymentsFromDB = async (query: Record<string, unknown>) => {
   const paymentsQuery = new QueryBuilder(
     Payment.find().populate({
-      path: 'UserId',
-      select: 'avatar fullName email address',
+      path: 'userId',
+      select: 'avatar fullName email address phoneNumber',
     }),
 
     query,
