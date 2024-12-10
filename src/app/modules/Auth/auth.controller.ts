@@ -5,7 +5,6 @@ import sendResponse from '../../utils/sendResponse';
 import { AuthServices } from './auth.service';
 
 const verifyOtp = catchAsync(async (req, res) => {
-
   const result = await AuthServices.verifyOtpToDB(req?.body);
   // console.log(result);
   // Determine the response message based on the requestType
@@ -57,7 +56,7 @@ const loginUser = catchAsync(async (req, res) => {
 });
 
 const changePassword = catchAsync(async (req, res) => {
-  const result = await AuthServices.changePasswordToDB(req?.user, req?.body);
+  const result = await AuthServices.changePasswordToDB(req?.body);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

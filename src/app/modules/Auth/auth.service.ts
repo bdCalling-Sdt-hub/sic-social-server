@@ -16,7 +16,6 @@ const verifyOtpToDB = async (payload: {
   otp: number;
   verificationType: 'emailVerification' | 'passwordReset';
 }) => {
-
   // Check if the provided verificationType is valid
   const validVerificationTypes = new Set([
     'emailVerification',
@@ -107,9 +106,9 @@ const resendVerificationEmailToDB = async (payload: { email: string }) => {
     );
   }
 
-  if (existingUser?.isVerified) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'User is already verified!');
-  }
+  // if (existingUser?.isVerified) {
+  //   throw new ApiError(httpStatus.BAD_REQUEST, 'User is already verified!');
+  // }
 
   // Generate new OTP and set its expiration time
   const otp = generateOtp();
@@ -203,20 +202,21 @@ const loginUserToDB = async (payload: {
   };
 };
 
-const changePasswordToDB = async (
-  user: JwtPayload,
-  payload: { currentPassword: string; newPassword: string },
-) => {
+const changePasswordToDB = async (payload: {
+  confirmPassword: string;
+  newPassword: string;
+  email: string;
+}) => {
   // Verify user's current password
-  const existingUser = await User.isUserExistsByEmail(user?.email);
+  const existingUser = await User.isUserExistsByEmail(payload?.email);
 
-  const isPasswordValid = await User.isPasswordMatched(
-    payload?.currentPassword,
-    existingUser?.password,
-  );
+  if (!existingUser) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found!');
+  }
 
-  if (!isPasswordValid) {
-    throw new ApiError(httpStatus.FORBIDDEN, 'Invalid password provided!');
+  // Check if passwords match
+  if (payload?.confirmPassword !== payload.newPassword) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Passwords do not match!');
   }
 
   // Check if the new password is different from the current one
@@ -244,7 +244,11 @@ const changePasswordToDB = async (
   };
 
   // Update user with new password
-  await User.findByIdAndUpdate(user?.userId, updatedData);
+  await User.findOneAndUpdate(
+    { email: payload?.email }, // Filter to find the user
+    { $set: updatedData }, // Update data
+    { new: true }, // Return the updated document (optional)
+  );
 };
 
 const requestPasswordResetToDB = async (payload: { email: string }) => {
