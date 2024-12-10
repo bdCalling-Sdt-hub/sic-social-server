@@ -1,8 +1,6 @@
 import { Router } from 'express';
-import validateAuth from '../../middlewares/validateAuth';
-import { USER_ROLE } from '../User/user.constant';
-import { AuthControllers } from './auth.controller';
 import validateRequest from '../../middlewares/validateRequest';
+import { AuthControllers } from './auth.controller';
 import loginValidationSchema from './auth.validation';
 
 const router = Router();
@@ -27,11 +25,7 @@ router.post(
 );
 
 // Change password for authenticated users
-router.post(
-  '/change-password',
-  validateAuth(USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
-  AuthControllers.changePassword,
-);
+router.post('/change-password', AuthControllers.changePassword);
 
 // Change password for authenticated users
 router.post('/refresh-token', AuthControllers.issueNewAccessToken);
