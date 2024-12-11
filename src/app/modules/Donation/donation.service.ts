@@ -17,22 +17,25 @@ const createDonationPostToDB = async (
   payload.createdBy = user?.userId;
 
   // Check the total number of Donations in the database
+
   const donationCount = await Donation.countDocuments();
   const donation = await Donation.findOne();
 
   // If the total number of Donations has reached the limit (5), throw an error
   if (donationCount >= 1) {
+    if (file && file?.path) {
+      payload.details.image = getPathAfterUploads(file?.path);
+    }
     const result = await Donation.findByIdAndUpdate(donation?._id, payload);
     return result;
+  } else {
+    if (file && file?.path) {
+      payload.details.image = getPathAfterUploads(file?.path);
+    }
+    // Create the new Donation entry in the database
+    const result = await Donation.create(payload);
+    return result;
   }
-
-  if (file && file?.path) {
-    payload.details.image = getPathAfterUploads(file?.path);
-  }
-
-  // Create the new Donation entry in the database
-  const result = await Donation.create(payload);
-  return result;
 };
 
 const getDonationsFromDB = async () => {

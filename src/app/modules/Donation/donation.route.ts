@@ -16,7 +16,7 @@ router
   // POST request to create a new "Donation" entry
   .post(
     validateAuth(USER_ROLE.ADMIN, USER_ROLE['SUPER-ADMIN']),
-    upload.fields([{ name: 'image', maxCount: 1 }]),
+    upload.single('image'),
     (req: Request, res: Response, next: NextFunction) => {
       req.body = JSON.parse(req?.body?.data);
       next();
