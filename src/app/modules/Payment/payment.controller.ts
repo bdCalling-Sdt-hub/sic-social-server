@@ -1,10 +1,10 @@
 import httpStatus from 'http-status';
+import Stripe from 'stripe';
+import config from '../../config';
+import ApiError from '../../errors/ApiError';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { PaymentServices } from './payment.service';
-import ApiError from '../../errors/ApiError';
-import Stripe from 'stripe';
-import config from '../../config';
 const stripe = new Stripe(config.stripeSecretKey as string);
 
 const savePaymentInfo = catchAsync(async (req, res) => {
